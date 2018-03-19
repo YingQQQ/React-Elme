@@ -6,7 +6,7 @@ const ROOT = resolve(__dirname, '..');
 const Build = resolve(ROOT, 'build');
 const App = resolve(ROOT, 'src', 'index.js');
 const Style = resolve(ROOT, 'src',
-  'style', 'index.css');
+  'style', 'scss', 'index.scss');
 
 const path = {
   ROOT,

@@ -1,0 +1,39 @@
+#head-top{
+  background-color: $blue;
+  position: fixed;
+  z-index: 99;
+  left: 0;
+  right: 0;
+  top: 0;
+  @include wh(100%, 1.95rem);
+}
+.head-logo{
+  @include ct;
+  left: .4rem;
+  @include wh(2.3rem, .85rem);
+  @include sc(.7rem, #fff);
+}
+.head-login{
+  @include ct;
+  right: .55rem;
+  @include sc(.65rem, #fff);
+  .login-span{
+    color: #fff;
+  }
+}
+.head-back{
+  left: 0.4rem;
+  @include wh(0.6rem, 1rem);
+  line-height: 2.5rem;
+  margin-left: .4rem;
+}
+.head-title{
+  width: 50%;
+  text-align: center;
+  @include center;
+  .title-text {
+    @include ellipse;
+    @include sc(.7rem, $fc);
+    line-height: 1.5rem;
+  }
+}

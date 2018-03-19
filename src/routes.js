@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Loadable from 'react-loadable';
 import PropTypes from 'prop-types';
 
-
 const MyLoadingComponent = ({ isLoading, error }) => {
   // Handle the loading state
   if (isLoading) {
@@ -24,8 +23,8 @@ const AsyncApp = Loadable({ // eslint-disable-line new-cap
   loading: MyLoadingComponent,
   delay: 300
 });
-const AsyncHome = Loadable({ // eslint-disable-line new-cap
-  loader: () => import('./containers/Home'),
+const AsyncCity = Loadable({ // eslint-disable-line new-cap
+  loader: () => import('./containers/City'),
   loading: MyLoadingComponent
 });
 const AsyncPage1 = Loadable({ // eslint-disable-line new-cap
@@ -41,9 +40,9 @@ const AsyncNoMatch = Loadable({ // eslint-disable-line new-cap
 export default () => (
   <Router>
     <Switch>
-      <Route exact path="/" component={AsyncApp} />
-      <Route path="/home" component={AsyncHome} />
+      <Route exact path="/home" component={AsyncApp} />
       <Route path="/page1" component={AsyncPage1} />
+      <Route path="/city/:id" component={AsyncCity} />
       <Route component={AsyncNoMatch} />
     </Switch>
   </Router>

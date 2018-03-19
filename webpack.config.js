@@ -6,10 +6,9 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Paths = require('./config/path-help');
+const portSetting = require('./config/port-help');
 const htmlTemplate = require('html-webpack-template');
 
-console.log(Paths.App);
-console.log(Paths.Style);
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const pkg = require('./package.json');
@@ -42,6 +41,7 @@ let stylesLoader = [
       }
     }
   },
+  'sass-loader',
 ];
 if (!IS_DEV) {
   const fallback = stylesLoader.shift();
@@ -95,25 +95,42 @@ const config = {
       appMountId: 'app',
       inject: false,
       favicon: './apple-icon-60x60.png',
-      mobile: true,
+      meta: [{
+        name: 'apple-mobile-web-app-capable',
+        content: 'yes'
+      }, {
+        name: 'x5-fullscreen',
+        content: true
+      }, {
+        name: 'full-screen',
+        content: 'yes'
+      }, {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui'
+      }]
     }),
     new webpack.optimize.ModuleConcatenationPlugin()
   ]
 };
 if (IS_DEV) {
-  babelConfig.plugins.unshift('react-hot-loader/babel');
+  // babelConfig.plugins.unshift('react-hot-loader/babel');
   const keys = Object.keys(config.entry);
   keys.forEach((key) => {
     const currentItem = config.entry[key];
-    currentItem.unshift('webpack-hot-middleware/client?http://localhost:8090',
+    currentItem.unshift(`webpack-hot-middleware/client?http://localhost:${portSetting.dev.port}`,
       'webpack/hot/only-dev-server');
     if (key === 'app') {
       currentItem.unshift('react-hot-loader/patch');
     }
   });
+  console.log(config.entry);
   config.plugins.push(
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.HotModuleReplacementPlugin());
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      __DEVELOPMENT__: JSON.stringify(true),
+    })
+  );
 } else {
   config.plugins.push(
     new CleanWebpackPlugin([Paths.Build], {

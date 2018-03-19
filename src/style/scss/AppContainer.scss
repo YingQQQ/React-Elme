@@ -1,0 +1,91 @@
+.nav-city {
+  padding-top: 2.35rem;
+  border-top: 1px solid $bc;
+  background-color: #fff;
+  margin-bottom: .4rem;
+  .city-tip {
+    padding: 0 .45rem;
+    @include fj;
+    line-height: 1.45rem;
+    span:nth-of-type(1) {
+      @include sc(0.55rem, #666);
+    }
+    span:nth-of-type(2) {
+      font-weight: 900;
+      @include sc(0.475rem, #9f9f9f);
+    }
+  }
+}
+
+.city-guess {
+  @include fj;
+  align-items: center;
+  padding: 0 .45rem;
+  height: 1.8rem;
+  border-top: 1px solid $bc;
+  border-bottom: 2px solid $bc;
+  @include font(.75rem, 1.22rem);
+  .arrow-right {
+    @include wh(.6rem, .6rem);
+    fill: #999;
+  }
+  span:nth-of-type(1) {
+    color: $blue;
+  }
+}
+
+.hot-city-container {
+  background-color: #fff;
+  margin-bottom: .4rem;
+  li {
+    color: $blue;
+    @include wh(25%, 1.75rem);
+    text-align: center;
+    @include font(.6rem, 1.75rem);
+    border-bottom: .025rem solid $bc;
+    border-right: .025rem solid $bc;
+  }
+  a {
+    color: $blue;
+  }
+}
+
+.hot-city {
+  @include font(.55rem, 1.45rem);
+  color: #666;
+  border-top: 2px solid $bc;
+  border-bottom: 1px solid $bc;
+  text-indent: .45rem;
+  span {
+    @include sc(.475rem, #999);
+  }
+}
+
+.city-list-ul {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  li {
+    color: $blue;
+    @include wh(25%, 1.75rem);
+    text-align: center;
+    @include font(.6rem, 1.75rem);
+    border-bottom: .025rem solid $bc;
+    border-right: .025rem solid $bc;
+    @include ellipse
+  }
+}
+
+.group-city-container {
+  .letter-classify-li {
+    margin-bottom: 0.4rem;
+    background-color: #fff;
+    border-bottom: 1px solid $bc;
+    .groupcity-name-container {
+      a {
+        color: #666;
+      }
+    }
+  }
+}

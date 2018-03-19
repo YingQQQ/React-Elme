@@ -1,12 +1,20 @@
 import {
   combineReducers
-} from 'redux';
+} from 'redux-immutable';
 import {
   routerReducer
 } from 'react-router-redux';
-import locationChange from './locationChange';
+import {
+  guessCity,
+  hotCities,
+  groupCities,
+  currentCity
+} from './getDate';
 
 export default combineReducers({
   routerReducer,
-  locationChange
+  guessCity,
+  hotCities,
+  groupCities,
+  currentCity
 });

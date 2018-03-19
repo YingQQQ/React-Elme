@@ -1,0 +1,57 @@
+.city-form {
+  background-color: $fc;
+  @include tdb(1px, $bc);
+  padding-top: .45rem;
+  div {
+    width: 90%;
+    text-align: center;
+    margin: 0 auto;
+    .city-input {
+      border: 1px solid $bc;
+      @include sc(.65rem, #333);
+      padding: 0 .3rem;
+    }
+    .input-style {
+      @include wh(100%, 1.4rem);
+      border-radius: .1rem;
+      margin-bottom: .4rem;
+    }
+    .city-sumbit {
+      background-color: $blue;
+      @include sc(.65rem, $fc);
+    }
+  }
+}
+
+.pois-search-history {
+  padding-left: .5rem;
+  @include font(.45rem, 1.45rem);
+  @include tdb(1px, $bc);
+}
+
+.getpois-ul {
+  background-color: $fc;
+  border-top: 1px solid $bc;
+  li {
+    padding-top: .65rem;
+    border-bottom: 1px solid $bc;
+    .pois-name {
+      width: 90%;
+      margin: 0 auto .35rem;
+      @include sc(.65rem, #333);
+      @include ellipse;
+    }
+    .pois-address {
+      width: 90%;
+      margin: 0 auto .55rem;
+      @include sc(.45rem, #999);
+      @include ellipse;
+    }
+  }
+}
+.clear-all-history{
+  background-color: $fc;
+  @include sc(.7rem, #666);
+  line-height: 2.02rem;
+  text-align: center;
+}

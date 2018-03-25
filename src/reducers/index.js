@@ -8,7 +8,8 @@ import {
   guessCity,
   hotCities,
   groupCities,
-  currentCity
+  currentCity,
+  searchPlace
 } from './getDate';
 
 export default combineReducers({
@@ -16,5 +17,6 @@ export default combineReducers({
   guessCity,
   hotCities,
   groupCities,
-  currentCity
+  currentCity,
+  searchPlace
 });

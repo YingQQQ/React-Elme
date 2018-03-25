@@ -10,7 +10,6 @@ import immutable, {
 import PropTypes from 'prop-types';
 import Svg from '../components/Svg';
 import Head from '../components/Head';
-
 import {
   fetchGuessCity,
   fetchHotCities,
@@ -25,22 +24,19 @@ class App extends Component {
     groupCities: {}
   }
   componentDidMount() {
-    const {
-      dispatch
-    } = this.props;
-    dispatch(fetchGuessCity());
-    dispatch(fetchHotCities());
-    dispatch(fetchGroupCities());
+    this.props.fetchGuessCity();
+    this.props.fetchHotCities();
+    this.props.fetchGroupCities();
   }
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
       console.log('componentWillReceiveProps');
       const { guessCity, hotCities, groupCities } = nextProps;
-      if (hotCities.last().hotCitiesISfetch && guessCity.getIn(['guessCityisFetch']) && groupCities.getIn(['groupCitiesIsFetch'])) {
+      if (hotCities.size && guessCity.size && groupCities.size) {
         const name = guessCity.getIn(['name']);
         const id = guessCity.getIn(['id']);
         const hotCity = hotCities.pop().toArray();
-        const groupCitiesJS = groupCities.delete('groupCitiesIsFetch').toObject();
+        const groupCitiesJS = groupCities.toObject();
         this.setState({
           name,
           id,
@@ -143,7 +139,9 @@ class App extends Component {
 }
 
 App.propTypes = {
-  dispatch: PropTypes.func,
+  fetchGuessCity: PropTypes.func.isRequired,
+  fetchHotCities: PropTypes.func.isRequired,
+  fetchGroupCities: PropTypes.func.isRequired,
   guessCity: PropTypes.instanceOf(immutable.Map),
   hotCities: PropTypes.instanceOf(immutable.Iterable),
   groupCities: PropTypes.instanceOf(immutable.Map)
@@ -155,4 +153,8 @@ const mapStateToProps = state => ({
   groupCities: state.getIn(['groupCities'])
 });
 
-export default hot(module)(connect(mapStateToProps)(App));
+export default hot(module)(connect(mapStateToProps, {
+  fetchGuessCity,
+  fetchHotCities,
+  fetchGroupCities,
+})(App));

@@ -18,33 +18,35 @@ class Head extends PureComponent {
     goBack();
   }
   render() {
-    const { title } = this.props;
+    const { title, search } = this.props;
     const { name } = this.state;
     return (
       <header id="head-top">
         {
-          title ?
-            <div>
-              <section className="head-back" role="button" tabIndex="0" onClick={this.goBack} >
-                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1">
-                  <polyline points="12,18 4,9 12,0" fill={'none'} stroke={'#fff'} strokeWidth={2} />
-                </svg>
-              </section>
-              <section className="head-title">
-                <span className="title-text">
-                  {title}
-                </span>
-              </section>
-              <Link to="/home" className="head-login">
-                <span className="login-span">切换城市</span>
-              </Link>
-            </div> :
-            <div>
-              <span className="head-logo">{name}</span>
-              <Link to="/page1" className="head-login">
-                <span className="login-span">登录|注册</span>
-              </Link>
-            </div>
+          title &&
+          <section className="head-back" role="button" tabIndex="0" onClick={this.goBack} >
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1">
+              <polyline points="12,18 4,9 12,0" fill={'none'} stroke={'#fff'} strokeWidth={2} />
+            </svg>
+          </section>
+        }
+        {
+          search &&
+          <section className="head-back head-search" role="button" tabIndex="0" onClick={this.goBack} >
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" version="1.1">
+              <circle cx={8} cy={8} r={7} stroke={'rgb(255,255,255)'} strokeWidth={1} fill={'none'} />
+              <line x1="14" y1="14" x2="20" y2="20" strokeWidth={2} stroke={'rgb(255,255,255)'} />
+            </svg>
+          </section>
+        }
+        {
+          !title && !search &&
+            <span className="head-logo">{name}</span>
+        }
+        {
+          <Link to={`${title ? '/home' : '/login'}`} className="head-login">
+            <span className="login-span">{title ? '切换城市' : '登录|注册'}</span>
+          </Link>
         }
       </header>
     );
@@ -53,6 +55,7 @@ class Head extends PureComponent {
 
 Head.propTypes = {
   title: PropTypes.string,
+  search: PropTypes.bool,
   history: PropTypes.shape({
     goBack: PropTypes.func
   }),

@@ -1,6 +1,6 @@
 module.exports = {
   dev: {
-    port: 8001,
+    port: 8004,
     context: [
       '/shopping',
       '/ugc',
@@ -14,7 +14,9 @@ module.exports = {
       '/eus',
       '/payapi',
       '/img',
+      'restapi'
     ],
     proxypath: 'http://cangdu.org:8001',
+    // proxypath: 'https://h5.ele.me',
   }
 };

@@ -1,3 +1,5 @@
+import { on } from './dom-helpers/events';
+
 export default function px2rem(doucment, window) {
   const docEl = document.documentElement;
   const resizeEvent = 'orientationchange' in window ? 'orientationchange' : 'resize';
@@ -11,6 +13,6 @@ export default function px2rem(doucment, window) {
   if (!docEl.addEventListener) {
     return;
   }
-  window.addEventListener(resizeEvent, recalc, false);
-  doucment.addEventListener('DOMContentLoaded', recalc, false);
+  on(window, resizeEvent, recalc);
+  on(doucment, 'DOMContentLoaded', recalc, false);
 }

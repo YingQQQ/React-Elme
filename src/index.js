@@ -8,9 +8,10 @@ import Routes from './routes';
 import configureStore from './store/configuerStore';
 import px2rem from './utils/px2rem';
 
+const document = window.document;
 px2rem(document, window);
 injectTapEventPlugin();
-const rootEl = window.document.getElementById('app');
+const rootEl = document.getElementById('app');
 const store = configureStore();
 const history = createHistory();
 

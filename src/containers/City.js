@@ -2,39 +2,75 @@
 import React, {
   Component
 } from 'react';
-import {
-  hot
-} from 'react-hot-loader';
-import immutable, {
-  is,
-} from 'immutable';
+import { hot } from 'react-hot-loader';
+import immutable from 'immutable';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Head from '../components/Head';
+import HistoryList from '../components/HistoryList';
 import {
-  fetchCurrentCity
+  fetchCurrentCity,
+  fetchSearchPlace,
+  clearPlace,
 } from '../actions/action';
-
+import {
+  getLocalStorage,
+  setLocalStorage,
+  removeLocalStorage
+} from '../utils/mutils';
+import shallowEqual from '../utils/shallowEqual';
 
 class City extends Component {
-  state = {
-    name: 'eles',
-    currentCity: {}
-  };
+  static storage(val) {
+    let history = getLocalStorage('placesHistory');
+    if (history) {
+      history = JSON.parse(history);
+      let checkrepeat = false;
+      history.forEach((place) => {
+        if (place.geohash === val.geohash) {
+          checkrepeat = true;
+        }
+      });
+      if (!checkrepeat) {
+        history.push(val);
+      }
+      setLocalStorage('placesHistory', history);
+    } else {
+      const init = [];
+      init.push(val);
+      setLocalStorage('placesHistory', init);
+    }
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: 'eles',
+      currentCity: {},
+      value: '',
+      historytitle: true,
+      historyList: getLocalStorage('placesHistory') ? JSON.parse(getLocalStorage('placesHistory')) : [],
+      placeNone: false
+    };
+  }
   componentDidMount() {
-    const { dispatch } = this.props;
     const { id } = this.props.match.params;
-    console.log('City componentDidMount');
-    dispatch(fetchCurrentCity(id));
+    this.props.fetchCurrentCity(id);
   }
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
-      const { currentCity } = nextProps;
-      if (currentCity && currentCity.getIn(['currentCitiyIsFetch'])) {
-        console.log('City componentWillReceiveProps');
-        const currentCityJS = currentCity.delete('groupCitiesIsFetch').toObject();
+      const { currentCity, searchPlace } = nextProps;
+      if (currentCity.size) {
+        const currentCityJS = currentCity.toObject();
         this.setState({
-          currentCity: currentCityJS
+          currentCity: currentCityJS,
+        });
+      }
+      if (searchPlace.getIn(['historyList']).size) {
+        const historyList = searchPlace.getIn(['historyList']).toArray();
+        const historytitle = false;
+        this.setState({
+          historytitle,
+          historyList
         });
       }
     }
@@ -42,80 +78,92 @@ class City extends Component {
   shouldComponentUpdate(nextProps = {}, nextState = {}) {
     const thisProps = this.props || {};
     const thisState = this.state || {};
+    // console.log(shallowEqual(thisProps, nextProps, thisState, nextState));
+    return shallowEqual(thisProps, nextProps, thisState, nextState);
+  }
+  componentWillUnmount() {
+    this.props.clearPlace();
+  }
 
-    if (Object.keys(thisProps).length !== Object.keys(nextProps).length ||
-      Object.keys(thisState).length !== Object.keys(nextState).length) {
-      return true;
+  handleChange = (event) => {
+    const value = event.target.value;
+    this.setState(() => ({
+      value
+    }));
+  }
+  handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.postPios();
+  }
+  postPios() {
+    const { currentCity: { id }, value } = this.state;
+    if (value) {
+      this.props.fetchSearchPlace(id, value);
     }
-
-    Object.keys(nextProps).forEach((key) => {
-      if (!is(thisProps[key], nextProps[key])) {
-        return true;
-      }
-    });
-
-    // 试过使用Object.keys来比较但是会导致setSate()无法及时更新原因未知
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key in nextState) {
-      if (!is(thisState[key], nextState[key])) {
-        return true;
-      }
-    }
-    return false;
+  }
+  clearHistory = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.clear();
+  }
+  clear() {
+    const historyList = [];
+    this.setState(() => ({
+      historyList,
+      historytitle: true,
+    }));
+    removeLocalStorage('placesHistory');
   }
   render() {
-    const { name } = this.state.currentCity;
+    const { currentCity: { name }, value } = this.state;
     const { history } = this.props;
     return (
       <div className="container">
         <Head title={name} history={history} />
         <form className="city-form">
           <div>
-            <input type="search" name="city" placeholder="输入学校、商务楼、地址" className="city-input input-style" required />
+            <input
+              type="search"
+              name="city"
+              placeholder="输入学校、商务楼、地"
+              className="city-input input-style"
+              value={value}
+              onChange={this.handleChange}
+              required
+            />
           </div>
           <div>
-            <input type="submit" name="submit" value="提交" className="city-sumbit input-style" required />
+            <input type="submit" name="submit" value="提交" className="city-sumbit input-style" onTouchTap={this.handleClick} />
           </div>
         </form>
-        <header className="pois-search-history">搜索历史</header>
+        {this.state.historytitle ? <header className="pois-search-history">搜索历史</header> : null}
         <ul className="getpois-ul">
-          <li>
-            <h4 className="pois-name">黄龙</h4>
-            <p className="pois-address">黄龙体育场</p>
-          </li>
-          <li>
-            <h4 className="pois-name">黄龙</h4>
-            <p className="pois-address">浙江省杭州市建德市梅城镇城西村</p>
-          </li>
-          <li>
-            <h4 className="pois-name">黄龙</h4>
-            <p className="pois-address">浙江省杭州市建德市梅城镇城西村</p>
-          </li>
-          <li>
-            <h4 className="pois-name">黄龙</h4>
-            <p className="pois-address">浙江省杭州市建德市梅城镇城西村</p>
-          </li>
-          <li>
-            <h4 className="pois-name">黄龙</h4>
-            <p className="pois-address">浙江省杭州市建德市梅城镇城西村</p>
-          </li>
-          <li>
-            <h4 className="pois-name">黄龙</h4>
-            <p className="pois-address">浙江省杭州市建德市梅城镇城西村</p>
-          </li>
-          <li>
-            <h4 className="pois-name">黄龙</h4>
-            <p className="pois-address">浙江省杭州市建德市梅城镇城西村</p>
-          </li>
+          {
+            this.state.historyList.map(val => (
+              <HistoryList
+                key={`${val.name}`}
+                place={val}
+                onHeaderClick={City.storage}
+              />
+            ))
+          }
         </ul>
-        <footer className="clear-all-history">清空所有</footer>
+        {(this.state.historyList.length > 0) &&
+          <footer className="clear-all-history">
+            <button className="button-style" onClick={this.clearHistory}>清空所有</button>
+          </footer>
+        }
+
       </div>
     );
   }
 }
 
 City.propTypes = {
-  dispatch: PropTypes.func,
+  fetchSearchPlace: PropTypes.func.isRequired,
+  fetchCurrentCity: PropTypes.func.isRequired,
+  clearPlace: PropTypes.func.isRequired,
   id: PropTypes.number,
   match: PropTypes.shape({
     params: PropTypes.object
@@ -123,11 +171,18 @@ City.propTypes = {
   history: PropTypes.shape({
     params: PropTypes.object
   }),
-  currentCity: PropTypes.instanceOf(immutable.Map)
+  currentCity: PropTypes.instanceOf(immutable.Map),
+  searchPlace: PropTypes.instanceOf(immutable.Map)
 };
 
+
 const mapStateToProps = state => ({
-  currentCity: state.getIn(['currentCity'])
+  currentCity: state.getIn(['currentCity']),
+  searchPlace: state.getIn(['searchPlace'])
 });
 
-export default hot(module)(connect(mapStateToProps)(City));
+export default hot(module)(connect(mapStateToProps, {
+  fetchCurrentCity,
+  fetchSearchPlace,
+  clearPlace
+})(City));

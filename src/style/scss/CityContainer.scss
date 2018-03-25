@@ -51,7 +51,11 @@
 }
 .clear-all-history{
   background-color: $fc;
-  @include sc(.7rem, #666);
-  line-height: 2.02rem;
   text-align: center;
+  button{
+    background-color: $fc;
+    @include sc(.7rem, #666);
+    line-height: 2.02rem;
+    text-align: center;
+  }
 }

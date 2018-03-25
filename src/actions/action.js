@@ -3,6 +3,8 @@ import {
   HOT_CITIES,
   GROUP_CITIES,
   CURRENT_CITY,
+  SEARCH_PLACE,
+  INIT_SEARCH_PLACE,
 } from '../constants/actionsType';
 import fetch from '../utils/fetch';
 
@@ -49,3 +51,19 @@ export const currentCity = data => ({
 
 export const fetchCurrentCity = id => dispatch =>
   fetch(`/v1/cities/${id}`).then(data => dispatch(currentCity(data)));
+
+//  查选地址
+export const searchPlace = data => ({
+  type: SEARCH_PLACE,
+  data
+});
+export const fetchSearchPlace = (id, value) => dispatch =>
+  fetch('/v1/pois', {
+    type: 'search',
+    city_id: id,
+    keyword: value
+  }).then(data => dispatch(searchPlace(data)));
+
+export const clearPlace = () => ({
+  type: INIT_SEARCH_PLACE,
+});

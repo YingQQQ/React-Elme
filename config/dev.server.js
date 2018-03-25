@@ -4,6 +4,7 @@ import webpack from 'webpack';
 import logger from 'koa-logger';
 import historyFallback from 'koa2-history-api-fallback';
 import proxy from 'koa2-simple-proxy';
+// import proxy from 'koa-proxies';
 import config from '../webpack.config';
 import portSetting from './port-help';
 
@@ -23,9 +24,18 @@ const dev = {
     colors: true
   }
 };
+// const proxyGuessOptions = {
+//   target: 'https://restapi.ele.me/',
+//   changeOrigin: true,
+// };
+const options = {
+  target: portSetting.dev.proxypath,
+  changeOrigin: true,
+};
 
 app.use(historyFallback());
-app.use(proxy(portSetting.dev.context, portSetting.dev.proxypath));
+// app.use(proxy('/shopping/v1/cities/guess', proxyGuessOptions));
+app.use(proxy(portSetting.dev.context, options));
 app.use(logger());
 app.use(middleware({
   compiler,

@@ -34,10 +34,7 @@ export const getLocalStorage = (key) => {
   if (!key) {
     return;
   }
-  if (typeof key !== 'string') {
-    key = JSON.stringify(key);
-  }
-  window.localStorage.getItem(key);
+  return window.localStorage.getItem(key);
 };
 
 /**

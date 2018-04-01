@@ -1,0 +1,70 @@
+.shoplist-container {
+  background-color: $fc;
+  bottom: 2rem;
+  .shop-list {
+    display: flex;
+    border-bottom: 1px solid #f1f1f1;
+    padding: 0.7rem 0.5rem;
+    .shop-img {
+      display: block;
+      margin-right: .4rem;
+      @include wh(2.7rem, 2.7rem);
+    }
+  }
+  .shop-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    .shop-detail-head {
+      @include fj;
+      align-items: center;
+    }
+    .shop-title {
+      width: 6.5rem;
+      @include font(0.65rem, 0.65rem, 'PingFangSC-Regular');
+      @include ellipse;
+      &::before {
+        content: '品牌';
+        display: inline;
+        background-color: #ffd930;
+        padding: 0 .1rem;
+        margin-right: .2rem;
+        @include sc(.5rem, #333);
+      }
+    }
+    ul {
+      display: flex;
+      transform: scale(.8);
+    }
+    li {
+      @include sc(0.5rem, #999);
+      margin-right: 0.05rem;
+      padding: 0.04rem;
+    }
+  }
+  .shop-rating {
+    @include fj;
+    align-items: center;
+    height: .6rem;
+    // margin-top: .5rem;
+    .rate-left {
+      display: flex;
+      @include sc(.4rem, #333);
+    }
+    .rating-num{
+      color: #ff9a0d;
+      transform: scale(.9);
+      margin-left: .2rem;
+    }
+    .shop-mmouth-order{
+      transform: scale(.8);
+    }
+    svg {
+      @include wh(.5rem, .5rem);
+    }
+    .rate-right{
+      @include sc(.4rem, #333);
+    }
+  }
+}

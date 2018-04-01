@@ -117,4 +117,5 @@ const template = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://ww
   </defs>
   </svg>`;
 
+
 export default () => <InlineSVG src={template} />;

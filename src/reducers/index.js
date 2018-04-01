@@ -9,7 +9,9 @@ import {
   hotCities,
   groupCities,
   currentCity,
-  searchPlace
+  searchPlace,
+  msiteAddress,
+  foodTypes
 } from './getDate';
 
 export default combineReducers({
@@ -18,5 +20,7 @@ export default combineReducers({
   hotCities,
   groupCities,
   currentCity,
-  searchPlace
+  searchPlace,
+  msiteAddress,
+  foodTypes,
 });

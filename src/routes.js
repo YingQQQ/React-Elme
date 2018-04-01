@@ -16,10 +16,7 @@ const AsyncMsite = Loadable({ // eslint-disable-line new-cap
   loader: () => import('./containers/Msite'),
   loading: MyLoadingComponent
 });
-const AsyncPage1 = Loadable({ // eslint-disable-line new-cap
-  loader: () => import('./containers/Page1'),
-  loading: MyLoadingComponent
-});
+
 const AsyncNoMatch = Loadable({ // eslint-disable-line new-cap
   loader: () => import('./containers/NoMatch'),
   loading: MyLoadingComponent
@@ -30,7 +27,6 @@ export default () => (
   <Router>
     <Switch>
       <Route exact path="/home" component={AsyncApp} />
-      <Route path="/page1" component={AsyncPage1} />
       <Route path="/city/:id" component={AsyncCity} />
       <Route path="/Msite" component={AsyncMsite} />
       <Route component={AsyncNoMatch} />

@@ -89,7 +89,6 @@ const computedIndex = (params) => {
   const indexMax = Children.count(children) - 1;
   let index = startIndex + ((startX - pageX) / viewLength);
   let newStartX;
-  console.log(index);
   if (!resistance) {
     if (index < 0) {
       index = 0;
@@ -322,11 +321,9 @@ class Swiper extends Component {
         pageY: parseInt(transformValues[5], 10)
       }, axis);
 
-      console.log(`transformNormalized:${transformNormalized.pageX}`);
       this.startIndex = -transformNormalized.pageX /
         (this.viewLength - parseInt(rootStyle.paddingLeft, 10)
         - parseInt(rootStyle.paddingRight, 10));
-      console.log(`startIndex:${this.startIndex}`);
     }
   }
   handleSwipeMove = (e) => {
@@ -345,7 +342,6 @@ class Swiper extends Component {
       const dy = Math.abs(this.startY - touch.pageY);
 
       const isSwiping = dx > dy && dx > constant.isSwiping_min;
-      console.log(`isSwiping:${isSwiping}`);
       if (dx > dy) {
         e.preventDefault();
       }

@@ -5,6 +5,8 @@ import {
   CURRENT_CITY,
   SEARCH_PLACE,
   INIT_SEARCH_PLACE,
+  MSITE_ADDRESS,
+  FOOD_TYPES,
 } from '../constants/actionsType';
 import fetch from '../utils/fetch';
 
@@ -67,3 +69,28 @@ export const fetchSearchPlace = (id, value) => dispatch =>
 export const clearPlace = () => ({
   type: INIT_SEARCH_PLACE,
 });
+
+
+// 获取msite页面地址信息
+
+export const msiteAddress = data => ({
+  type: MSITE_ADDRESS,
+  data
+});
+
+export const fetchMsiteAddress = geohash => dispatch =>
+  fetch(`/v2/pois/${geohash}`).then(data => dispatch(msiteAddress(data)));
+
+// 获取食物分类
+
+export const foodTyps = data => ({
+  type: FOOD_TYPES,
+  data
+});
+
+export const fetchFoodTypes = geohash => dispatch =>
+  fetch('/v2/index_entry', {
+    geohash,
+    group_type: '1',
+    'flags[]': 'F'
+  }).then(data => dispatch(foodTyps(data)));

@@ -1,0 +1,53 @@
+.msite-container {
+  padding-top: 2.1rem;
+  border-bottom: 1px solid $bc;
+  height: 10.6rem;
+  background-color: $fc;
+  .food-type-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .link-foodtype {
+    width: 25%;
+    padding: 0.3rem 0rem;
+    @include fj(center);
+    img {
+      @include wh(1.8rem, 1.8rem);
+      margin-bottom: .4rem;
+    }
+    figcaption {
+      text-align: center;
+      @include sc(0.55rem, #666);
+    }
+  }
+}
+
+// Pagination Compoment
+
+.swpier-dots-container {
+  @include fj(center);
+  @include cl;
+  bottom: .5rem;
+  button:nth-of-type(2) {
+    margin-left: .5rem;
+  }
+}
+
+.shop-list-container{
+  margin-top: .55rem;
+  background-color: $fc;
+  border-top: 0.025rem solid $bc;
+  .shop-header{
+    .shop-icon {
+      fill: #999;
+      margin-left: 0.6rem;
+      vertical-align: middle;
+      @include wh(0.6rem, 0.6rem);
+    }
+    .shop-header-title{
+      color: #999;
+      @include font(0.55rem, 1.6rem);
+      margin-left: .3rem;
+    }
+  }
+}

@@ -32,7 +32,7 @@ const options = {
   target: portSetting.dev.proxypath,
   changeOrigin: true,
 };
-
+console.log(options.target);
 app.use(historyFallback());
 // app.use(proxy('/shopping/v1/cities/guess', proxyGuessOptions));
 app.use(proxy(portSetting.dev.context, options));

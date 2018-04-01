@@ -8,7 +8,9 @@ import {
   GROUP_CITIES,
   CURRENT_CITY,
   SEARCH_PLACE,
-  INIT_SEARCH_PLACE
+  INIT_SEARCH_PLACE,
+  MSITE_ADDRESS,
+  FOOD_TYPES,
 } from '../constants/actionsType';
 
 
@@ -82,6 +84,32 @@ export const searchPlace = (state = initialPlacesHistories, action) => {
     case INIT_SEARCH_PLACE: {
       const imuDataClear = state.merge(initialPlacesHistories);
       return imuDataClear;
+    }
+    default:
+      return state;
+  }
+};
+
+
+export const msiteAddress = (state = initialState, action) => {
+  switch (action.type) {
+    case MSITE_ADDRESS: {
+      const data = action.data;
+      const imuData = Map(data);
+      return imuData;
+    }
+    default:
+      return state;
+  }
+};
+
+const initialFoodTypes = List([]);
+export const foodTypes = (state = initialFoodTypes, action) => {
+  switch (action.type) {
+    case FOOD_TYPES: {
+      const data = Array.from(action.data);
+      const imuData = List(data);
+      return imuData;
     }
     default:
       return state;

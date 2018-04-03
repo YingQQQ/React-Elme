@@ -57,7 +57,9 @@ export const getStyle = (elem, attr, NumberMode = 'int') => {
   if (attr === 'scrollTop') {
     style = elem.scrollTop;
   } else if (view) {
-    style = elem.style[camelCase(attr)] || view.getComputedStyle(elem).getPropertyValue(attr);
+    style =
+      elem.style[camelCase(attr)] ||
+      view.getComputedStyle(elem).getPropertyValue(attr);
   } else {
     style = elem.currentStyle[attr];
   }
@@ -78,7 +80,10 @@ export const loadMore = (elem, callback) => {
   let oldScrollTop;
 
   const isLoadMore = () => {
-    if (document.body.scrollTop + windowHeight >= height + setTop + paddingBottom + marginBottom) {
+    if (
+      document.body.scrollTop + windowHeight >=
+      height + setTop + paddingBottom + marginBottom
+    ) {
       callback();
     }
   };
@@ -95,31 +100,47 @@ export const loadMore = (elem, callback) => {
     });
   };
 
-  document.body.addEventListener('scroll', () => {
-    isLoadMore();
-  }, false);
+  document.body.addEventListener(
+    'scroll',
+    () => {
+      isLoadMore();
+    },
+    false
+  );
   // 运动开始时获取元素 高度 和 offseTop, pading, margin. passive是关键可以然移动端页面滚动变得流畅
-  elem.addEventListene('touchstart', () => {
-    height = elem.offsetHeight;
-    setTop = elem.offsetTop;
-    paddingBottom = getStyle(elem, 'paddingBottom');
-    marginBottom = getStyle(elem, 'marginBottom');
-  }, {
-    passive: true
-  });
+  elem.addEventListene(
+    'touchstart',
+    () => {
+      height = elem.offsetHeight;
+      setTop = elem.offsetTop;
+      paddingBottom = getStyle(elem, 'paddingBottom');
+      marginBottom = getStyle(elem, 'marginBottom');
+    },
+    {
+      passive: true
+    }
+  );
   // 运动过程中保持监听 scrollTop 的值判断是否到达底部
-  elem.addEventListener('touchmove', () => {
-    isLoadMore();
-  }, {
-    passive: true
-  });
+  elem.addEventListener(
+    'touchmove',
+    () => {
+      isLoadMore();
+    },
+    {
+      passive: true
+    }
+  );
   // 运动结束时判断是否有惯性运动，惯性运动结束判断是非到达底部
-  elem.addEventListene('touchend', () => {
-    oldScrollTop = document.body.scrollTop;
-    moveEnd();
-  }, {
-    passive: true
-  });
+  elem.addEventListene(
+    'touchend',
+    () => {
+      oldScrollTop = document.body.scrollTop;
+      moveEnd();
+    },
+    {
+      passive: true
+    }
+  );
 };
 
 /**
@@ -143,16 +164,26 @@ const cssNumber = {
   'z-index': 1,
   zoom: 1
 };
-const isFunction = obj => !!obj && toString.call(obj) === '[object Fucntion]' && typeof obj === 'function';
-const isObject = obj => !!obj && typeof obj === 'object' && obj !== null && toString.call(obj) === '[object Object]';
-const isPlainObject = obj => isObject(obj) && Object.getPrototypeOf(obj) === Object.prototype;
+const isFunction = obj =>
+  !!obj &&
+  toString.call(obj) === '[object Fucntion]' &&
+  typeof obj === 'function';
+const isObject = obj =>
+  !!obj &&
+  typeof obj === 'object' &&
+  obj !== null &&
+  toString.call(obj) === '[object Object]';
+const isPlainObject = obj =>
+  isObject(obj) && Object.getPrototypeOf(obj) === Object.prototype;
 // 将驼峰字符串转成css属性，如marginLeft-->margin-left
 const cssDasherize = str => str.replace(/([A-Z])/g, '-$1').toLowerCase();
-const dasherize = str => str.replace(/::/g, '/')
-  .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
-  .replace(/([a-z\d])([A-Z])/g, '$1_$2')
-  .replace(/_/g, '-')
-  .toLowerCase();
+const dasherize = str =>
+  str
+    .replace(/::/g, '/')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+    .replace(/([a-z\d])([A-Z])/g, '$1_$2')
+    .replace(/_/g, '-')
+    .toLowerCase();
 const maybeAddRem = (property, value, isRem) => {
   if (typeof value === 'number' && cssNumber[dasherize(property)]) {
     if (isRem) {
@@ -192,7 +223,7 @@ const anim = (elem, properties, duration, ease, callback, delay) => {
     cssValues['animation-name'] = properties;
     cssValues['animation-duration'] = `${duration}s`;
     cssValues['animation-delay'] = `${delay}s`;
-    cssValues['animation-timing-function'] = (ease || 'linear');
+    cssValues['animation-timing-function'] = ease || 'linear';
   } else {
     const cssProperties = [];
     let tranforms = '';
@@ -214,7 +245,7 @@ const anim = (elem, properties, duration, ease, callback, delay) => {
       cssValues['transition-delay'] = `${delay}s`;
       cssValues['transition-property'] = cssProperties.join(', ');
       cssValues['transition-duration'] = `${duration}s`;
-      cssValues['transition-timing-function'] = (ease || 'linear');
+      cssValues['transition-timing-function'] = ease || 'linear';
       endEvent = 'transitionend';
     }
   }
@@ -270,3 +301,15 @@ export const animate = (elem, properties, duration, ease, callback, delay) => {
   }
   return anim(elem, properties, duration, ease, callback, delay);
 };
+
+export const parseUrl = url =>
+  typeof url === 'string' &&
+  url
+    .split('?')[1]
+    .split('&')
+    .reduce((prev, cur) => {
+      const param = cur.split('=');
+      // eslint-disable-next-line   no-param-reassign
+      prev[param[0]] = param[1];
+      return prev;
+    }, {});

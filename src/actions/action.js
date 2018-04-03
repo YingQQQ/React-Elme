@@ -7,6 +7,7 @@ import {
   INIT_SEARCH_PLACE,
   MSITE_ADDRESS,
   FOOD_TYPES,
+  SHOP_LIST
 } from '../constants/actionsType';
 import fetch from '../utils/fetch';
 
@@ -67,9 +68,8 @@ export const fetchSearchPlace = (id, value) => dispatch =>
   }).then(data => dispatch(searchPlace(data)));
 
 export const clearPlace = () => ({
-  type: INIT_SEARCH_PLACE,
+  type: INIT_SEARCH_PLACE
 });
-
 
 // 获取msite页面地址信息
 
@@ -94,3 +94,46 @@ export const fetchFoodTypes = geohash => dispatch =>
     group_type: '1',
     'flags[]': 'F'
   }).then(data => dispatch(foodTyps(data)));
+
+//  获取商铺列表
+
+export const shopList = data => ({
+  type: SHOP_LIST,
+  data
+});
+
+export const fetchShopList = (
+  latitude,
+  longitude,
+  offset,
+  restaurantCategoryId = '',
+  restaurantCategoryIds = '',
+  orderBy = '',
+  deliveryMode = '',
+  supportIds = []
+) => {
+  let supportStr = '';
+  if (supportIds.length) {
+    supportIds.forEach((item) => {
+      if (item.status) {
+        supportStr += `&support_ids[]=${item.id}`;
+      }
+    });
+  }
+  const data = {
+    latitude,
+    longitude,
+    offset,
+    limit: '20',
+    'extras[]': 'activities',
+    keyword: '',
+    restaurant_category_id: restaurantCategoryId,
+    'restaurant_category_ids[]': restaurantCategoryIds,
+    order_by: orderBy,
+    'delivery_mode[]': deliveryMode + supportStr
+  };
+  return dispatch =>
+    fetch('/shopping/restaurants', data).then(response =>
+      dispatch(shopList(response))
+    );
+};

@@ -46,25 +46,60 @@
   .shop-rating {
     @include fj;
     align-items: center;
-    height: .6rem;
-    // margin-top: .5rem;
     .rate-left {
       display: flex;
       @include sc(.4rem, #333);
     }
-    .rating-num{
-      color: #ff9a0d;
-      transform: scale(.9);
+    .rating-num {
+      @include sc(.4rem, #ff9a0d);
       margin-left: .2rem;
     }
-    .shop-mmouth-order{
+    .shop-mmouth-order {
       transform: scale(.8);
     }
     svg {
       @include wh(.5rem, .5rem);
     }
-    .rate-right{
-      @include sc(.4rem, #333);
+  }
+  .rate-right {
+    // position: relative;
+    // left: .58rem;
+    display: flex;
+    justify-content: flex-end;
+    font-size: .4rem;
+    min-width: 5rem;
+    transform: scale(.7);
+    margin-right: -0.5rem;
+    span {
+      // display: inline-block;
+      padding: .03rem .2rem 0;
+    }
+    span:nth-of-type(1) {
+      background-color: $blue;
+      color: $fc;
+      border-radius: .08rem;
+    }
+    span:last-child {
+      border: 0.025rem solid $blue;
+      border-radius: .1rem;
+      margin-left: .2rem;
+    }
+  }
+  .shop-distance {
+    @include fj;
+    align-items: center;
+    .distance-left{
+      display: flex;
+    }
+    span{
+      @include sc(.4rem, #999);
+      transform: scale(.9);
+    }
+    .distance-right{
+      display: flex;
+      span:last-child{
+        color: $blue;
+      }
     }
   }
 }

@@ -1,7 +1,4 @@
-import {
-  Map,
-  List
-} from 'immutable';
+import { Map, List } from 'immutable';
 import {
   GUESS_CITY,
   HOT_CITIES,
@@ -11,18 +8,19 @@ import {
   INIT_SEARCH_PLACE,
   MSITE_ADDRESS,
   FOOD_TYPES,
+  SHOP_LIST
 } from '../constants/actionsType';
 
+const initialObjectState = Map({});
+const initialArrayState = List([]);
 
-const initialState = Map({});
-
-export const guessCity = (state = initialState, action) => {
+export const guessCity = (state = initialObjectState, action) => {
   switch (action.type) {
     case GUESS_CITY: {
       const data = action.data;
       let imuData = {
         name: data.name,
-        id: data.id,
+        id: data.id
       };
       imuData = Map(imuData);
       return imuData;
@@ -32,7 +30,7 @@ export const guessCity = (state = initialState, action) => {
   }
 };
 
-export const hotCities = (state = initialState, action) => {
+export const hotCities = (state = initialObjectState, action) => {
   switch (action.type) {
     case HOT_CITIES: {
       const data = Array.from(action.data);
@@ -43,7 +41,7 @@ export const hotCities = (state = initialState, action) => {
       return state;
   }
 };
-export const groupCities = (state = initialState, action) => {
+export const groupCities = (state = initialObjectState, action) => {
   switch (action.type) {
     case GROUP_CITIES: {
       const data = action.data;
@@ -55,7 +53,7 @@ export const groupCities = (state = initialState, action) => {
   }
 };
 
-export const currentCity = (state = initialState, action) => {
+export const currentCity = (state = initialObjectState, action) => {
   switch (action.type) {
     case CURRENT_CITY: {
       const data = action.data;
@@ -68,7 +66,7 @@ export const currentCity = (state = initialState, action) => {
 };
 
 const initialPlacesHistories = Map({
-  historyList: List([]),
+  historyList: List([])
 });
 
 export const searchPlace = (state = initialPlacesHistories, action) => {
@@ -76,7 +74,7 @@ export const searchPlace = (state = initialPlacesHistories, action) => {
     case SEARCH_PLACE: {
       const data = Array.from(action.data);
       let imuData = Map({
-        historyList: List(data),
+        historyList: List(data)
       });
       imuData = initialPlacesHistories.merge(imuData);
       return imuData;
@@ -90,8 +88,7 @@ export const searchPlace = (state = initialPlacesHistories, action) => {
   }
 };
 
-
-export const msiteAddress = (state = initialState, action) => {
+export const msiteAddress = (state = initialObjectState, action) => {
   switch (action.type) {
     case MSITE_ADDRESS: {
       const data = action.data;
@@ -103,11 +100,22 @@ export const msiteAddress = (state = initialState, action) => {
   }
 };
 
-const initialFoodTypes = List([]);
-export const foodTypes = (state = initialFoodTypes, action) => {
+export const foodTypes = (state = initialArrayState, action) => {
   switch (action.type) {
     case FOOD_TYPES: {
       const data = Array.from(action.data);
+      const imuData = List(data);
+      return imuData;
+    }
+    default:
+      return state;
+  }
+};
+
+export const shopList = (state = initialArrayState, action) => {
+  switch (action.type) {
+    case SHOP_LIST: {
+      const data = action.data;
       const imuData = List(data);
       return imuData;
     }

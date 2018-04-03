@@ -1,6 +1,5 @@
 /* 头部组件 */
 import React, { PureComponent } from 'react';
-import { hot } from 'react-hot-loader';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -66,4 +65,4 @@ Head.propTypes = {
   }),
 };
 
-export default hot(module)(Head);
+export default Head;

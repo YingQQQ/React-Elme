@@ -10,25 +10,23 @@ import Swiper from '../components/Swiper';
 import Pagination from '../components/Pagination';
 import ShopList from '../components/ShopList';
 
-import {
-  fetchMsiteAddress,
-  fetchFoodTypes
-} from '../actions/action';
-
+import { fetchMsiteAddress, fetchFoodTypes } from '../actions/action';
 
 class Msite extends Component {
   static getCategoryId(url) {
-    const urlData = decodeURIComponent(url.split('=')[1].replace('&target_name', ''));
+    const urlData = decodeURIComponent(
+      url.split('=')[1].replace('&target_name', '')
+    );
     if (/restaurant_category_id/gi.test(urlData)) {
       return JSON.parse(urlData).restaurant_category_id.id;
     }
     return '';
   }
-  state= {
+  state = {
     name: 'elem',
     Maxindex: 0,
     index: 0
-  }
+  };
   componentDidMount() {
     const { location: { search } } = this.props;
     this.geohash = search.split('=')[1];
@@ -43,7 +41,10 @@ class Msite extends Component {
       this.RECORD_ADDRESS = msiteAddress.toObject();
       this.msiteTitle = this.RECORD_ADDRESS.name;
       let foodArray = List([]);
-      foodArray = foodArray.push(foodTypes.slice(0, 8), foodTypes.slice(8, foodTypes.size));
+      foodArray = foodArray.push(
+        foodTypes.slice(0, 8),
+        foodTypes.slice(8, foodTypes.size)
+      );
       this.foodArray = foodArray;
       this.setState(() => ({
         Maxindex: foodArray.size
@@ -53,7 +54,7 @@ class Msite extends Component {
 
   handleChangeIndex = (index) => {
     this.setState({
-      index,
+      index
     });
   };
 
@@ -72,46 +73,75 @@ class Msite extends Component {
         <Svg />
         <Head search address={this.msiteTitle} />
         <div style={swpieContainer}>
-          <Swiper className="msite-container" index={index} onChangeIndex={this.handleChangeIndex}>
+          <Swiper
+            className="msite-container"
+            index={index}
+            onChangeIndex={this.handleChangeIndex}
+          >
             <div className="food-type-container">
-              {
-                this.foodArray && this.foodArray.get(0).toArray().map(type => (
-                  <Link
-                    to={`/food?geohash=${this.geohash}&title=${type.title}&restaurant_category_id=${Msite.getCategoryId(type.link)}`}
-                    key={`foodtype_${type.title}`}
-                    className="link-foodtype"
-                  >
-                    <figure>
-                      <img src={`${this.imageUrl + type.image_url}`} alt={type.title} />
-                      <figcaption>{type.title}</figcaption>
-                    </figure>
-                  </Link>
-                ))
-              }
+              {this.foodArray &&
+                this.foodArray
+                  .get(0)
+                  .toArray()
+                  .map(type => (
+                    <Link
+                      to={`/food?geohash=${this.geohash}&title=${
+                        type.title
+                      }&restaurant_category_id=${Msite.getCategoryId(
+                        type.link
+                      )}`}
+                      key={`foodtype_${type.title}`}
+                      className="link-foodtype"
+                    >
+                      <figure>
+                        <img
+                          src={`${this.imageUrl + type.image_url}`}
+                          alt={type.title}
+                        />
+                        <figcaption>{type.title}</figcaption>
+                      </figure>
+                    </Link>
+                  ))}
             </div>
             <div className="food-type-container">
-              {
-                this.foodArray && this.foodArray.get(1).toArray().map(type => (
-                  <Link to="/home" key={`foodtype_${type.title}`} className="link-foodtype">
-                    <figure>
-                      <img src={`${this.imageUrl + type.image_url}`} alt={type.title} />
-                      <figcaption>{type.title}</figcaption>
-                    </figure>
-                  </Link>
-                ))
-              }
+              {this.foodArray &&
+                this.foodArray
+                  .get(1)
+                  .toArray()
+                  .map(type => (
+                    <Link
+                      to="/home"
+                      key={`foodtype_${type.title}`}
+                      className="link-foodtype"
+                    >
+                      <figure>
+                        <img
+                          src={`${this.imageUrl + type.image_url}`}
+                          alt={type.title}
+                        />
+                        <figcaption>{type.title}</figcaption>
+                      </figure>
+                    </Link>
+                  ))}
             </div>
           </Swiper>
-          <Pagination index={index} dots={2} onChangeIndex={this.handleChangeIndex} />
+          <Pagination
+            index={index}
+            dots={2}
+            onChangeIndex={this.handleChangeIndex}
+          />
         </div>
         <div className="shop-list-container">
           <header className="shop-header">
             <svg className="shop-icon">
-              <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#shop" />
+              <use
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                xlinkHref="#shop"
+              />
             </svg>
             <span className="shop-header-title">附近商家</span>
           </header>
-          <ShopList />
+          <ShopList location={this.props.location} />
         </div>
       </div>
     );
@@ -122,21 +152,22 @@ Msite.propTypes = {
     hash: PropTypes.string,
     key: PropTypes.string,
     pathname: PropTypes.string,
-    search: PropTypes.string,
+    search: PropTypes.string
   }).isRequired,
   fetchMsiteAddress: PropTypes.func.isRequired,
   fetchFoodTypes: PropTypes.func.isRequired,
   msiteAddress: PropTypes.instanceOf(immutable.Map),
-  foodTypes: PropTypes.instanceOf(immutable.Iterable),
+  foodTypes: PropTypes.instanceOf(immutable.Iterable)
 };
 
 const mapStateToProps = state => ({
   msiteAddress: state.getIn(['msiteAddress']),
-  foodTypes: state.getIn(['foodTypes']),
+  foodTypes: state.getIn(['foodTypes'])
 });
 
-
-export default hot(module)(connect(mapStateToProps, {
-  fetchMsiteAddress,
-  fetchFoodTypes
-})(Msite));
+export default hot(module)(
+  connect(mapStateToProps, {
+    fetchMsiteAddress,
+    fetchFoodTypes
+  })(Msite)
+);

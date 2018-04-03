@@ -6,3 +6,4 @@ export const SEARCH_PLACE = 'SEARCH_PLACE';
 export const INIT_SEARCH_PLACE = 'INIT_SEARCH_PLACE';
 export const MSITE_ADDRESS = 'MSITE_ADDRESS';
 export const FOOD_TYPES = 'FOOD_TYPES';
+export const SHOP_LIST = 'SHOP_LIST';

@@ -1,21 +1,9 @@
 import {
   combineReducers
 } from 'redux-immutable';
-import {
-  routerReducer
-} from 'react-router-redux';
-import {
-  guessCity,
-  hotCities,
-  groupCities,
-  currentCity,
-  searchPlace,
-  msiteAddress,
-  foodTypes
-} from './getDate';
 
-export default combineReducers({
-  routerReducer,
+import rootRouter from './immutableRootReducer ';
+import {
   guessCity,
   hotCities,
   groupCities,
@@ -23,4 +11,18 @@ export default combineReducers({
   searchPlace,
   msiteAddress,
   foodTypes,
+  shopList,
+} from './getDate';
+
+
+export default combineReducers({
+  rootRouter,
+  guessCity,
+  hotCities,
+  groupCities,
+  currentCity,
+  searchPlace,
+  msiteAddress,
+  foodTypes,
+  shopList
 });

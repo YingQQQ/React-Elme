@@ -5,7 +5,8 @@ import { hot } from 'react-hot-loader';
 
 const RateStar = ({ active = false, rating = 5 }) => {
   const children = [];
-  const width = (rating * 2) / 5;
+  const width = (rating * 2.5) / 5;
+  console.log(width);
   const styles = {
     grey: {
       fill: '#ff9a0d',

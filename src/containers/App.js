@@ -1,19 +1,15 @@
-import React, {
-  Component
-} from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { hot } from 'react-hot-loader';
 import { connect } from 'react-redux';
-import immutable, {
-  is,
-} from 'immutable';
+import immutable, { is } from 'immutable';
 import PropTypes from 'prop-types';
 import Svg from '../components/Svg';
 import Head from '../components/Head';
 import {
   fetchGuessCity,
   fetchHotCities,
-  fetchGroupCities,
+  fetchGroupCities
 } from '../actions/action';
 
 class App extends Component {
@@ -22,7 +18,7 @@ class App extends Component {
     id: '',
     hotCity: [],
     groupCities: {}
-  }
+  };
   componentDidMount() {
     this.props.fetchGuessCity();
     this.props.fetchHotCities();
@@ -51,8 +47,10 @@ class App extends Component {
     const thisProps = this.props || {};
     const thisState = this.state || {};
 
-    if (Object.keys(thisProps).length !== Object.keys(nextProps).length ||
-      Object.keys(thisState).length !== Object.keys(nextState).length) {
+    if (
+      Object.keys(thisProps).length !== Object.keys(nextProps).length ||
+      Object.keys(thisState).length !== Object.keys(nextState).length
+    ) {
       return true;
     }
 
@@ -84,53 +82,40 @@ class App extends Component {
           <Link to={`city/${this.state.id}`} className="city-guess">
             <span>{this.state.name}</span>
             <svg className="arrow-right">
-              <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#arrow-right" />
+              <use
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                xlinkHref="#arrow-right"
+              />
             </svg>
           </Link>
         </nav>
         <section className="hot-city-container">
           <h4 className="hot-city">热门城市</h4>
           <ul className="city-list-ul">
-            {
-              this.state.hotCity.map(val =>
-                (
-                  <li key={`hotCity-${val.id}`}>
-                    <Link to={`city/${val.id}`}>
-                      {val.name}
-                    </Link>
-                  </li>
-                )
-              )
-            }
+            {this.state.hotCity.map(val => (
+              <li key={`hotCity-${val.id}`}>
+                <Link to={`city/${val.id}`}>{val.name}</Link>
+              </li>
+            ))}
           </ul>
         </section>
         <section className="group-city-container">
           <ul className="letter-classify">
-            {
-              Object.keys(this.state.groupCities).map(letter =>
-                (
-                  <li className="letter-classify-li" key={`groupLetter-${letter}`}>
-                    <h4 className="hot-city">
-                      {letter}
-                      {letter === 'A' ? <span>（按字母排序）</span> : null}
-                    </h4>
-                    <ul className="city-list-ul groupcity-name-container">
-                      {
-                        this.state.groupCities[letter].map(val =>
-                          (
-                            <li key={`hotCity-${val.id}`}>
-                              <Link to={`city/${val.id}`}>
-                                {val.name}
-                              </Link>
-                            </li>
-                          )
-                        )
-                      }
-                    </ul>
-                  </li>
-                )
-              )
-            }
+            {Object.keys(this.state.groupCities).map(letter => (
+              <li className="letter-classify-li" key={`groupLetter-${letter}`}>
+                <h4 className="hot-city">
+                  {letter}
+                  {letter === 'A' ? <span>（按字母排序）</span> : null}
+                </h4>
+                <ul className="city-list-ul groupcity-name-container">
+                  {this.state.groupCities[letter].map(val => (
+                    <li key={`hotCity-${val.id}`}>
+                      <Link to={`city/${val.id}`}>{val.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
           </ul>
         </section>
       </div>
@@ -153,8 +138,10 @@ const mapStateToProps = state => ({
   groupCities: state.getIn(['groupCities'])
 });
 
-export default hot(module)(connect(mapStateToProps, {
-  fetchGuessCity,
-  fetchHotCities,
-  fetchGroupCities,
-})(App));
+export default hot(module)(
+  connect(mapStateToProps, {
+    fetchGuessCity,
+    fetchHotCities,
+    fetchGroupCities
+  })(App)
+);

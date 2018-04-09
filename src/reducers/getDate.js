@@ -8,11 +8,28 @@ import {
   INIT_SEARCH_PLACE,
   MSITE_ADDRESS,
   FOOD_TYPES,
-  SHOP_LIST
+  SHOP_LIST,
+  SAVE_GEOHASH,
+  GET_GEOHASH,
 } from '../constants/actionsType';
 
 const initialObjectState = Map({});
 const initialArrayState = List([]);
+
+export const saveGeohash = (state = '', action) => {
+  switch (action.type) {
+    case SAVE_GEOHASH: {
+      const data = action.data;
+      return data;
+    }
+    case GET_GEOHASH: {
+      const data = state;
+      return data;
+    }
+    default:
+      return state;
+  }
+};
 
 export const guessCity = (state = initialObjectState, action) => {
   switch (action.type) {

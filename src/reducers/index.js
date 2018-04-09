@@ -12,6 +12,7 @@ import {
   msiteAddress,
   foodTypes,
   shopList,
+  saveGeohash,
 } from './getDate';
 
 
@@ -24,5 +25,6 @@ export default combineReducers({
   searchPlace,
   msiteAddress,
   foodTypes,
-  shopList
+  shopList,
+  saveGeohash
 });

@@ -7,9 +7,20 @@ import {
   INIT_SEARCH_PLACE,
   MSITE_ADDRESS,
   FOOD_TYPES,
-  SHOP_LIST
+  SHOP_LIST,
+  SAVE_GEOHASH,
+  GET_GEOHASH
 } from '../constants/actionsType';
 import fetch from '../utils/fetch';
+
+// 保存定位
+export const saveGeohash = data => ({
+  type: SAVE_GEOHASH,
+  data
+});
+export const getGeohash = () => ({
+  type: GET_GEOHASH,
+});
 
 // 城市定位
 export const guessCityAction = data => ({

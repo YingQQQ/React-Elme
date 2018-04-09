@@ -1,6 +1,6 @@
 module.exports = {
   dev: {
-    port: 8018,
+    port: 8022,
     context: [
       '/shopping',
       '/ugc',

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import immutable from 'immutable';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import RateStar from './RateStar';
 import { fetchShopList } from '../actions/action';
 import { parseUrl } from '../utils/mutils';
@@ -13,7 +14,6 @@ class ShopList extends Component {
     const address = paramUrl.geohash.split(',');
     this.latitude = address[0];
     this.longitude = address[1];
-    console.log(address);
   }
   componentDidMount() {
     console.log('shopList componentDidMount');
@@ -24,65 +24,79 @@ class ShopList extends Component {
       this.restaurantCategoryId
     );
   }
-  componentWillReceiveProps(nextProps) {
-    if (this.props !== nextProps) {
-      const { shopList, location: { search } } = nextProps;
-      console.log(shopList);
-      console.log(search);
-    }
-  }
   offset = 0;
   latitude = '';
   longitude = '';
   restaurantCategoryId = '';
   imgBaseUrl = 'http://cangdu.org:8001/img/';
   render() {
-    const { shopList } = this.props;
+    const { shopList, location: { search } } = this.props;
+    const stylesLink = {
+      display: 'flex',
+      flex: 'auto'
+    };
     return (
-      <div className="shoplist-container">
+      <div
+        className="shoplist-container"
+      >
         <ul>
-          {shopList.size &&
+          {!!shopList.size &&
             shopList.toArray().map(shop => (
               <li className="shop-list" key={shop.id}>
-                <section>
-                  <img src={this.imgBaseUrl + shop.image_path} alt={shop.name} className="shop-img" />
-                </section>
-                <hgroup className="shop-info">
-                  <header className="shop-detail-head">
-                    <h4 className="shop-title">{shop.name}</h4>
-                    <ul>
-                      {
-                        shop.supports.map(support => <li key={support.id}>{support.icon_name}</li>)
-                      }
-                    </ul>
-                  </header>
-                  <section className="shop-rating">
-                    <section className="rate-left">
-                      <RateStar active rating={shop.rating} />
-                      <RateStar />
-                      <span className="rating-num">{shop.rating}</span>
-                      <section className="shop-mmouth-order">月售{shop.recent_order_num}单</section>
-                    </section>
-                    <section className="rate-right">
-                      {
-                        shop.delivery_mode && <span> {shop.delivery_mode.text }</span>
-                      }
-                      <span>准时达</span>
-                    </section>
+                <Link
+                  to={{
+                    pathname: '/shop',
+                    search: `${search}&id=${shop.id}`
+                  }}
+                  style={stylesLink}
+                >
+                  <section>
+                    <img
+                      src={this.imgBaseUrl + shop.image_path}
+                      alt={shop.name}
+                      className="shop-img"
+                    />
                   </section>
-                  <section className="shop-distance">
-                    <section className="distance-left">
-                      <span>¥{shop.float_minimum_order_amount}起送</span>
-                      <span>/</span>
-                      <span>{shop.piecewise_agent_fee.tips}</span>
+                  <hgroup className="shop-info">
+                    <header className="shop-detail-head">
+                      <h4 className="shop-title">{shop.name}</h4>
+                      <ul>
+                        {shop.supports.map(support => (
+                          <li key={support.id}>{support.icon_name}</li>
+                        ))}
+                      </ul>
+                    </header>
+                    <section className="shop-rating">
+                      <section className="rate-left">
+                        <div className="rate-stars">
+                          <RateStar rating={shop.rating} />
+                        </div>
+                        <span className="rating-num">{shop.rating}</span>
+                        <section className="shop-mmouth-order">
+                          月售{shop.recent_order_num}单
+                        </section>
+                      </section>
+                      <section className="rate-right">
+                        {shop.delivery_mode && (
+                          <span> {shop.delivery_mode.text}</span>
+                        )}
+                        <span>准时达</span>
+                      </section>
                     </section>
-                    <section className="distance-right">
-                      <span>{shop.distance}</span>
-                      <span>/</span>
-                      <span>{shop.order_lead_time}</span>
+                    <section className="shop-distance">
+                      <section className="distance-left">
+                        <span>¥{shop.float_minimum_order_amount}起送</span>
+                        <span>/</span>
+                        <span>{shop.piecewise_agent_fee.tips}</span>
+                      </section>
+                      <section className="distance-right">
+                        <span>{shop.distance}</span>
+                        <span>/</span>
+                        <span>{shop.order_lead_time}</span>
+                      </section>
                     </section>
-                  </section>
-                </hgroup>
+                  </hgroup>
+                </Link>
               </li>
             ))}
         </ul>

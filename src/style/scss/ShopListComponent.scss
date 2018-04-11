@@ -108,4 +108,10 @@
       }
     }
   }
+  .isEnd{
+    text-align: center;
+    background: $fc;
+    @include sc(.5rem, #999);
+    padding: .4rem 0;
+  }
 }

@@ -1,57 +1,46 @@
 import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
-import { listen } from '../utils/dom-helpers/events';
+// import PropTypes from 'prop-types';
+// import Animated from 'animated/lib/targets/react-dom';
+import styled from 'styled-components';
+import Head from '../components/Head';
+import MyLoadingComponent from '../components/Loading';
 
-const styles = {
-  container: {
-    background: '#fff'
-  },
-  list: {
-    borderBottom: '.001rem solid #f1f1f1',
-    textAlign: 'center'
-  }
-};
-// const cData = [
-//   'http://img1.gtimg.com/15/1580/158031/15803178_1200x1000_0.jpg',
-//   'http://img1.gtimg.com/15/1580/158031/15803179_1200x1000_0.jpg',
-//   'http://img1.gtimg.com/15/1580/158031/15803181_1200x1000_0.jpg',
-//   'http://img1.gtimg.com/15/1580/158031/15803182_1200x1000_0.jpg',
-//   'http://img1.gtimg.com/15/1580/158031/15803183_1200x1000_0.jpg'
-// ];
+// const Button = props => <div {...props} />;
+
+const Wrapper = styled.section`
+  margin-top: 2rem;
+`;
+// const ButtonTap = styled(Button)`
+//   justify-content: center;
+//   align-items: center;
+//   display: flex;
+//   cursor: pointer;
+//   width: 200px;
+//   height: 45px;
+//   border: 'none';
+//   border-radius: 4;
+//   background-color: #ffc107;
+// `;
 
 class Shop extends Component {
   componentDidMount() {
     console.log('shop componentDidMount');
-    this.touchMoveListener = listen(this.rootNood, 'touchmove', (event) => {
-      this.handleMove(event);
-    });
   }
-  componentWillUnmount() {
-    this.touchMoveListener();
-  }
-  handleMove = (e) => {
-    console.log(e);
-  };
   render() {
-    const children = [];
-    for (let index = 0; index < 30; index += 1) {
-      children.push(
-        <li key={index} style={Object.assign({}, styles.list)}>
-          {index}
-        </li>
-      );
-    }
     return (
-      <section
-        style={Object.assign({}, styles.container)}
-        ref={(node) => {
-          this.rootNood = node;
-        }}
-      >
-        <ul>{children}</ul>
-      </section>
+      <div>
+        <Head title="123" history={history} />
+        <Wrapper>
+          <MyLoadingComponent isLoading />
+        </Wrapper>
+      </div>
     );
   }
 }
+
+Shop.propTypes = {
+
+};
 
 export default hot(module)(Shop);

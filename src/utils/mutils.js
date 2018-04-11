@@ -48,26 +48,22 @@ const camelCase = (str) => {
   if (typeof str !== 'string') {
     str = JSON.stringify(str);
   }
-  str.replace(rdashAlpha, fcamelCase);
+  return str.replace(rdashAlpha, fcamelCase);
 };
 
-export const getStyle = (elem, attr, NumberMode = 'int') => {
+export const getStyle = (elem, attr) => {
   const view = elem.ownerDocument.defaultView || window;
   let style;
   if (attr === 'scrollTop') {
     style = elem.scrollTop;
   } else if (view) {
-    style =
-      elem.style[camelCase(attr)] ||
-      view.getComputedStyle(elem).getPropertyValue(attr);
+    style = view.getComputedStyle(elem)[attr]
+      || elem.style[camelCase(attr)];
   } else {
     style = elem.currentStyle[attr];
   }
   // 在获取 opactiy 时需要获取小数 parseFloat
-  if (attr === 'opacity') {
-    return NumberMode === 'float' ? parseFloat(style) : parseInt(style, 10);
-  }
-  return style;
+  return attr === 'opacity' ? parseFloat(style) : parseInt(style, 10);
 };
 
 export const loadMore = (elem, callback) => {

@@ -120,7 +120,7 @@ class City extends Component {
     const { history } = this.props;
     return (
       <div className="container">
-        <Head title={name} history={history} />
+        <Head title={name} history={history} needLogin />
         <form className="city-form">
           <div>
             <input

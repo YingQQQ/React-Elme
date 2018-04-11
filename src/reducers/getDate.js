@@ -10,7 +10,7 @@ import {
   FOOD_TYPES,
   SHOP_LIST,
   SAVE_GEOHASH,
-  GET_GEOHASH,
+  LOAD_MORD_SHOPPLIST,
 } from '../constants/actionsType';
 
 const initialObjectState = Map({});
@@ -20,10 +20,6 @@ export const saveGeohash = (state = '', action) => {
   switch (action.type) {
     case SAVE_GEOHASH: {
       const data = action.data;
-      return data;
-    }
-    case GET_GEOHASH: {
-      const data = state;
       return data;
     }
     default:
@@ -134,6 +130,11 @@ export const shopList = (state = initialArrayState, action) => {
     case SHOP_LIST: {
       const data = action.data;
       const imuData = List(data);
+      return imuData;
+    }
+    case LOAD_MORD_SHOPPLIST: {
+      const data = action.data;
+      const imuData = state.concat(List(data));
       return imuData;
     }
     default:

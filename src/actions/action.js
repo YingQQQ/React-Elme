@@ -9,7 +9,7 @@ import {
   FOOD_TYPES,
   SHOP_LIST,
   SAVE_GEOHASH,
-  GET_GEOHASH
+  LOAD_MORD_SHOPPLIST
 } from '../constants/actionsType';
 import fetch from '../utils/fetch';
 
@@ -17,9 +17,6 @@ import fetch from '../utils/fetch';
 export const saveGeohash = data => ({
   type: SAVE_GEOHASH,
   data
-});
-export const getGeohash = () => ({
-  type: GET_GEOHASH,
 });
 
 // 城市定位
@@ -113,7 +110,7 @@ export const shopList = data => ({
   data
 });
 
-export const fetchShopList = (
+const parseParam = (
   latitude,
   longitude,
   offset,
@@ -131,7 +128,7 @@ export const fetchShopList = (
       }
     });
   }
-  const data = {
+  return {
     latitude,
     longitude,
     offset,
@@ -143,8 +140,27 @@ export const fetchShopList = (
     order_by: orderBy,
     'delivery_mode[]': deliveryMode + supportStr
   };
+};
+
+export const fetchShopList = (...args) => {
+  const data = parseParam(...args);
   return dispatch =>
     fetch('/shopping/restaurants', data).then(response =>
       dispatch(shopList(response))
+    );
+};
+
+// 加载更多shoplist数据
+
+export const loadMore = data => ({
+  type: LOAD_MORD_SHOPPLIST,
+  data
+});
+
+export const fetchLoadMore = (...args) => {
+  const data = parseParam(...args);
+  return dispatch =>
+    fetch('/shopping/restaurants', data).then(response =>
+      dispatch(loadMore(response))
     );
 };

@@ -3,9 +3,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  getGeohash
-} from '../actions/action';
 
 const Footer = ({ location, geohash }) => {
   const paths = [
@@ -71,6 +68,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps, {
-  getGeohash
-})(Footer);
+export default connect(mapStateToProps)(Footer);

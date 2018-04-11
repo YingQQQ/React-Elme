@@ -67,7 +67,7 @@ class Msite extends Component {
     return (
       <div>
         <Svg />
-        <Head search address={this.msiteTitle} />
+        <Head search address={this.msiteTitle} needLogin />
         <div style={swpieContainer}>
           <Swiper
             className="msite-container"

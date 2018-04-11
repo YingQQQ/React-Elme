@@ -10,14 +10,13 @@ class Head extends PureComponent {
     this.state = {
       name: 'eles'
     };
-    this.goBack = this.goBack.bind(this);
   }
-  goBack() {
+  goBack =() => {
     const { history: { goBack } } = this.props;
     goBack();
   }
   render() {
-    const { title, search, address } = this.props;
+    const { title, search, address, needLogin } = this.props;
     const { name } = this.state;
     return (
       <header id="head-top">
@@ -42,14 +41,23 @@ class Head extends PureComponent {
           !title && !search &&
             <span className="head-logo">{name}</span>
         }
-        <Link to={`${title ? '/home' : '/login'}`} className="head-login">
-          <span className="login-span">{title ? '切换城市' : '登录|注册'}</span>
-        </Link>
+        {
+          needLogin &&
+          <Link to={`${title ? '/home' : '/login'}`} className="head-login">
+            <span className="login-span">{title ? '切换城市' : '登录|注册'}</span>
+          </Link>
+        }
         {
           address &&
           <Link to={`${address && '/home'}`} className="head-title">
             <span className="title-text">{address}</span>
           </Link>
+        }
+        {
+          title &&
+          <span className="head-title">
+            <span className="title-text">{title}</span>
+          </span>
         }
       </header>
     );
@@ -59,6 +67,7 @@ class Head extends PureComponent {
 Head.propTypes = {
   title: PropTypes.string,
   address: PropTypes.string,
+  needLogin: PropTypes.bool,
   search: PropTypes.bool,
   history: PropTypes.shape({
     goBack: PropTypes.func

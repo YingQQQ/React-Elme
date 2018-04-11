@@ -8,4 +8,4 @@ export const MSITE_ADDRESS = 'MSITE_ADDRESS';
 export const FOOD_TYPES = 'FOOD_TYPES';
 export const SHOP_LIST = 'SHOP_LIST';
 export const SAVE_GEOHASH = 'SAVE_GEOHASH';
-export const GET_GEOHASH = 'GET_GEOHASH';
+export const LOAD_MORD_SHOPPLIST = 'LOAD_MORD_SHOPPLIST';

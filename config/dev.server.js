@@ -10,7 +10,6 @@ import portSetting from './port-help';
 
 const app = new Koa();
 const compiler = webpack(config);
-
 const hotPort = portSetting.dev.port || 8080;
 
 const dev = {

@@ -13,8 +13,8 @@ const document = window.document;
 px2rem(document, window);
 injectTapEventPlugin();
 const rootEl = document.getElementById('app');
-const store = configureStore();
 const history = createHistory();
+const store = configureStore();
 
 render(
   <Provider store={store}>

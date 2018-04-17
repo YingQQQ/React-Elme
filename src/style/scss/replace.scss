@@ -1,0 +1,18 @@
+.load{
+  transition: all 1s ease;
+  background-position-y: 1rem;
+  background-color: #fff;
+  color: #333;
+  font-size: .2932rem;
+  position: absolute;
+  flex-direction: column;
+  content: '';
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-direction:column;
+}

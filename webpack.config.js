@@ -94,6 +94,7 @@ const config = {
       title: 'React-Eleme',
       appMountId: 'app',
       inject: false,
+      mobile: true,
       favicon: './apple-icon-60x60.png',
       meta: [{
         name: 'apple-mobile-web-app-capable',

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { hot } from 'react-hot-loader';
 
 const styles = {
   root: {
@@ -52,4 +51,4 @@ PaginationDot.propTypes = {
 };
 
 
-export default hot(module)(PaginationDot);
+export default PaginationDot;

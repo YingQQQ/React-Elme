@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { hot } from 'react-hot-loader';
 import PaginationDot from './PaginationDot';
 
 
@@ -27,4 +26,4 @@ Pagination.propTypes = {
 };
 
 
-export default hot(module)(Pagination);
+export default Pagination;

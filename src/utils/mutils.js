@@ -274,6 +274,7 @@ const anim = (elem, properties, duration, ease, callback, delay) => {
   css(elem, cssValues);
 };
 
+
 export const animate = (elem, properties, duration, ease, callback, delay) => {
   if (isFunction(duration)) {
     callback = duration;
@@ -298,6 +299,11 @@ export const animate = (elem, properties, duration, ease, callback, delay) => {
   return anim(elem, properties, duration, ease, callback, delay);
 };
 
+
+/**
+ *
+ * @param {string} url
+ */
 export const parseUrl = url =>
   typeof url === 'string' &&
   url
@@ -309,3 +315,24 @@ export const parseUrl = url =>
       prev[param[0]] = param[1];
       return prev;
     }, {});
+
+
+/**
+ *
+ * @param {string} search
+ * @param {string} param
+ * @returns {string}
+ */
+export const getParameter = (search, param) => {
+  const iString = typeof param === 'string' && param.length;
+  let iStart = search.indexOf(param);
+  if (iStart === -1) {
+    return '';
+  }
+  iStart += iString + 1;
+  const iEnd = search.indexOf('&', iStart);
+  if (iEnd === -1) {
+    return search.substring(iStart);
+  }
+  return search.substring(iStart, iEnd);
+};

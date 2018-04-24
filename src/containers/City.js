@@ -92,9 +92,19 @@ class City extends Component {
     }));
   }
   handleClick = (e) => {
-    e.preventDefault();
     e.stopPropagation();
+    e.preventDefault();
+    if (e.codeKey === 13) {
+      console.log('enter');
+    }
     this.postPios();
+  }
+  handleSubmit = (e) => {
+    e.preventDefault();
+    if (e.codeKey === 13) {
+      console.log('enter');
+      this.postPios();
+    }
   }
   postPios() {
     const { currentCity: { id }, value } = this.state;
@@ -121,7 +131,7 @@ class City extends Component {
     return (
       <div className="container">
         <Head title={name} history={history} needLogin />
-        <form className="city-form">
+        <form className="city-form" onSubmit={this.handleSubmit}>
           <div>
             <input
               type="search"

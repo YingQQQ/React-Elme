@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { hot } from 'react-hot-loader';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import immutable from 'immutable';
 // import Animated from 'animated/lib/targets/react-dom';
 import styled from 'styled-components';
 import MyLoadingComponent from '../components/Loading';
 import Tap from '../components/Tap';
 import svg from '../style/images/shop_back_svg.svg';
-// const Button = props => <div {...props} />;
+import { getParameter } from '../utils/mutils';
+import { dispatchGeohash, fetchMsiteAddress, fetchShopDetails, fetchFoodMenu, fetchfoodRatingList, fetchRatingScores } from '../actions/action';
 
 const Wrapper = styled.section`
   margin-top: 2rem;
@@ -256,26 +259,44 @@ const FoodDetail = styled.main`
     padding-right: 1rem;
     margin-left: 0.4rem;
     font-size: 0.5rem;
-    p{
-      margin: .15rem 0;
-      display:inline-flex;
-      span{
-        transform: scale(.95);
+    p {
+      padding: 0.1rem 0 0 0;
+      display: inline-flex;
+      span {
+        transform: scale(0.95);
         transform-origin: 0% 0%;
       }
     }
+    .foodPrice {
+      font-weight: 700;
+      color: #f60;
+      font-size: 0.68rem;
+      &::before {
+        content: '\\A5';
+        font-weight: 400;
+        margin-right: 0.05rem;
+        font-size: 0.5rem;
+      }
+    }
+    .foodOldPrice {
+      font-size: 0.5rem;
+      display: inline-flex;
+      transform: scale(0.8);
+      transform-origin: 50% 50%;
+      align-items: center;
+    }
   }
-  .foodName{
+  .foodName {
     font-weight: 700;
-    font-size: .65rem;
+    font-size: 0.65rem;
     word-break: break-word;
-    line-height: .8rem;
+    line-height: 0.8rem;
     overflow: hidden;
   }
-  .foodSec{
-    small{
-      color:#999;
-      transform: scale(.8);
+  .foodSec {
+    small {
+      color: #999;
+      transform: scale(0.8);
       transform-origin: 0% 0%;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -286,12 +307,41 @@ const FoodDetail = styled.main`
 
 class Shop extends Component {
   state = {
-    index: 0
+    index: 0,
   };
+  componentWillMount() {
+    const { location: { search } } = this.props;
+    this.shopId = getParameter(search, 'id');
+  }
   componentDidMount() {
-    console.log('shop componentDidMount');
+    const { location: { search } } = this.props;
+    if (!this.props.geohash) {
+      console.log('no geohash');
+      const geohash = getParameter(search, 'geohash');
+      this.props.fetchMsiteAddress(geohash);
+    }
+    console.log('componentDidMount');
+    this.props.fetchFoodMenu(this.shopId);
+    this.props.fetchfoodRatingList(this.shopId, this.ratingOffset);
+    this.props.fetchRatingScores(this.shopId);
+  }
+  componentWillReceiveProps(nextProps) {
+    if (this.props !== nextProps) {
+      // , shopDetails, foodMenu, foodRatingList
+      const { msiteAddress } = nextProps;
+      if (msiteAddress.size && !(this.latitude && this.longitude)) {
+        this.latitude = msiteAddress.get('latitude');
+        this.longitude = msiteAddress.get('longitude');
+        console.log(this.latitude, this.longitude);
+        this.props.fetchShopDetails(this.shopId, this.latitude, this.longitude);
+      }
+    }
   }
   loading = null;
+  shopId = null;
+  latitude = null;
+  longitude = null;
+  ratingOffset = 0;
   handleBack = () => {
     const {
       history: { goBack }
@@ -447,7 +497,8 @@ class Shop extends Component {
                       <span>好评率100%</span>
                     </p>
                     <p>
-                      <strong>9.99</strong>
+                      <strong className="foodPrice">9.99</strong>
+                      <del className="foodOldPrice">19.99</del>
                     </p>
                   </section>
                 </div>
@@ -472,7 +523,42 @@ class Shop extends Component {
 Shop.propTypes = {
   history: PropTypes.shape({
     goBack: PropTypes.func
-  }).isRequired
+  }).isRequired,
+  geohash: PropTypes.string,
+  location: PropTypes.shape({
+    hash: PropTypes.string,
+    key: PropTypes.string,
+    pathname: PropTypes.string,
+    search: PropTypes.string
+  }).isRequired,
+  fetchMsiteAddress: PropTypes.func.isRequired,
+  fetchShopDetails: PropTypes.func.isRequired,
+  fetchFoodMenu: PropTypes.func.isRequired,
+  fetchfoodRatingList: PropTypes.func.isRequired,
+  fetchRatingScores: PropTypes.func.isRequired,
+  msiteAddress: PropTypes.instanceOf(immutable.Map),
+  // shopDetails: PropTypes.instanceOf(immutable.Map),
+  // foodMenu: PropTypes.instanceOf(immutable.Iterable),
+  // foodRatingList: PropTypes.instanceOf(immutable.Iterable),
+  // ratingScores: PropTypes.instanceOf(immutable.Iterable),
 };
 
-export default hot(module)(Shop);
+const mapStateToProps = state => ({
+  geohash: state.getIn(['saveGeohash']),
+  msiteAddress: state.getIn(['msiteAddress']),
+  shopDetails: state.getIn(['shopDetails']),
+  foodMenu: state.getIn(['foodMenu']),
+  foodRatingList: state.getIn(['foodRatingList']),
+  ratingScores: state.getIn(['ratingScores']),
+});
+
+export default hot(module)(
+  connect(mapStateToProps, {
+    dispatchGeohash,
+    fetchMsiteAddress,
+    fetchShopDetails,
+    fetchFoodMenu,
+    fetchfoodRatingList,
+    fetchRatingScores
+  })(Shop)
+);

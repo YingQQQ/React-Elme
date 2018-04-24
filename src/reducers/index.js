@@ -10,7 +10,12 @@ import {
   msiteAddress,
   foodTypes,
   shopList,
-  saveGeohash
+  saveGeohash,
+  saveLatLen,
+  shopDetails,
+  foodMenu,
+  foodRatingList,
+  ratingScores
 } from './getDate';
 
 const initialState = Immutable.fromJS({
@@ -37,5 +42,10 @@ export default injectedReducers =>
     foodTypes,
     shopList,
     saveGeohash,
+    saveLatLen,
+    shopDetails,
+    foodMenu,
+    foodRatingList,
+    ratingScores,
     ...injectedReducers
   });

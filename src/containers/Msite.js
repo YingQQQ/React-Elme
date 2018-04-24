@@ -11,7 +11,7 @@ import Pagination from '../components/Pagination';
 import ShopList from '../components/ShopList';
 import Footer from '../components/Footer';
 
-import { fetchMsiteAddress, fetchFoodTypes, saveGeohash } from '../actions/action';
+import { fetchMsiteAddress, fetchFoodTypes, dispatchGeohash } from '../actions/action';
 
 class Msite extends Component {
   static getCategoryId(url) {
@@ -29,7 +29,7 @@ class Msite extends Component {
   componentDidMount() {
     const { location: { search } } = this.props;
     this.geohash = search.split('=')[1];
-    this.props.saveGeohash(search);
+    this.props.dispatchGeohash(this.geohash);
     this.props.fetchMsiteAddress(this.geohash);
     this.props.fetchFoodTypes(this.geohash);
   }
@@ -81,11 +81,16 @@ class Msite extends Component {
                   .toArray()
                   .map(type => (
                     <Link
-                      to={`/food?geohash=${this.geohash}&title=${
-                        type.title
-                      }&restaurant_category_id=${Msite.getCategoryId(
-                        type.link
-                      )}`}
+                      to={{
+                        pathname: '/food',
+                        query: {
+                          geohash: this.geohash,
+                          title: type.title,
+                          restaurant_category_id: Msite.getCategoryId(
+                            type.link
+                          )
+                        }
+                      }}
                       key={`foodtype_${type.title}`}
                       className="link-foodtype"
                     >
@@ -155,7 +160,7 @@ Msite.propTypes = {
   fetchFoodTypes: PropTypes.func.isRequired,
   msiteAddress: PropTypes.instanceOf(immutable.Map),
   foodTypes: PropTypes.instanceOf(immutable.Iterable),
-  saveGeohash: PropTypes.func.isRequired,
+  dispatchGeohash: PropTypes.func.isRequired,
   geohash: PropTypes.string
 };
 
@@ -169,6 +174,6 @@ export default hot(module)(
   connect(mapStateToProps, {
     fetchMsiteAddress,
     fetchFoodTypes,
-    saveGeohash
+    dispatchGeohash
   })(Msite)
 );

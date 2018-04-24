@@ -11,6 +11,11 @@ import {
   SHOP_LIST,
   SAVE_GEOHASH,
   LOAD_MORD_SHOPPLIST,
+  SAVE_LATLNT,
+  GET_SHOP_DETAILS,
+  GET_FOOD_MENU,
+  GET_FOOD_RATING_LIST,
+  GET_RATING_SCORES,
 } from '../constants/actionsType';
 
 const initialObjectState = Map({});
@@ -21,6 +26,17 @@ export const saveGeohash = (state = '', action) => {
     case SAVE_GEOHASH: {
       const data = action.data;
       return data;
+    }
+    default:
+      return state;
+  }
+};
+export const saveLatLen = (state = initialObjectState, action) => {
+  switch (action.type) {
+    case SAVE_LATLNT: {
+      const data = action.data;
+      const imuData = Map(data);
+      return imuData;
     }
     default:
       return state;
@@ -135,6 +151,52 @@ export const shopList = (state = initialArrayState, action) => {
     case LOAD_MORD_SHOPPLIST: {
       const data = action.data;
       const imuData = state.concat(List(data));
+      return imuData;
+    }
+    default:
+      return state;
+  }
+};
+
+export const shopDetails = (state = initialObjectState, action) => {
+  switch (action.type) {
+    case GET_SHOP_DETAILS: {
+      const data = action.data;
+      const imuData = Map(data);
+      return imuData;
+    }
+    default:
+      return state;
+  }
+};
+export const foodMenu = (state = initialArrayState, action) => {
+  switch (action.type) {
+    case GET_FOOD_MENU: {
+      const data = action.data;
+      const imuData = List(data);
+      return imuData;
+    }
+    default:
+      return state;
+  }
+};
+
+export const foodRatingList = (state = initialArrayState, action) => {
+  switch (action.type) {
+    case GET_FOOD_RATING_LIST: {
+      const data = action.data;
+      const imuData = List(data);
+      return imuData;
+    }
+    default:
+      return state;
+  }
+};
+export const ratingScores = (state = initialArrayState, action) => {
+  switch (action.type) {
+    case GET_RATING_SCORES: {
+      const data = action.data;
+      const imuData = Map(data);
       return imuData;
     }
     default:

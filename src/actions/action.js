@@ -9,7 +9,12 @@ import {
   FOOD_TYPES,
   SHOP_LIST,
   SAVE_GEOHASH,
-  LOAD_MORD_SHOPPLIST
+  LOAD_MORD_SHOPPLIST,
+  SAVE_LATLNT,
+  GET_SHOP_DETAILS,
+  GET_FOOD_MENU,
+  GET_FOOD_RATING_LIST,
+  GET_RATING_SCORES,
 } from '../constants/actionsType';
 import fetch from '../utils/fetch';
 
@@ -18,6 +23,16 @@ export const saveGeohash = data => ({
   type: SAVE_GEOHASH,
   data
 });
+
+export const dispatchGeohash = data => dispatch => dispatch(saveGeohash(data));
+
+// 保存地理位置信息
+export const saveLatLnt = data => ({
+  type: SAVE_LATLNT,
+  data
+});
+
+export const dispatchLatLnt = data => dispatch => dispatch(saveLatLnt(data));
 
 // 城市定位
 export const guessCityAction = data => ({
@@ -164,3 +179,71 @@ export const fetchLoadMore = (...args) => {
       dispatch(loadMore(response))
     );
 };
+
+export const shopDetails = data => ({
+  type: GET_SHOP_DETAILS,
+  data
+});
+
+
+/**
+ * 获取shop页面商铺详情
+ * @param {string} shopId
+ * @param {string} latitude
+ * @param {string} longitude
+ */
+export const fetchShopDetails = (shopId, latitude, longitude) => dispatch =>
+  fetch(`/shopping/restaurant/${shopId}`, {
+    latitude,
+    longitude: `${longitude}&extras[]=activities&extras[]=album&extras[]=license&extras[]=identification&extras[]=statistics`
+  }).then(data => dispatch(shopDetails(data)));
+
+export const foodMenu = data => ({
+  type: GET_FOOD_MENU,
+  data
+});
+
+/**
+ * 获取商铺food详情
+ * @param {number} restaurantId
+ */
+export const fetchFoodMenu = restaurantId => dispatch =>
+  fetch('/shopping/v2/menu', {
+    restaurant_id: restaurantId
+  }).then(data => dispatch(foodMenu(data)));
+
+
+export const foodRatingList = data => ({
+  type: GET_FOOD_RATING_LIST,
+  data
+});
+
+/**
+ *获取商铺评价列表
+ * @param {number} shopId
+ * @param {number} offset
+ * @param {string} tagName
+ */
+export const fetchfoodRatingList = (shopId, offset, tagName = '') => dispatch =>
+  fetch(`/ugc/v2/restaurants/${shopId}/ratings`, {
+    has_content: true,
+    offset,
+    limit: 10,
+    tag_name: tagName
+  }).then(data => dispatch(foodRatingList(data)));
+
+/**
+ * 获取商铺评价分数
+ */
+
+export const ratingScores = data => ({
+  type: GET_RATING_SCORES,
+  data
+});
+
+/**
+ *
+ * @param {number} shopId
+ */
+export const fetchRatingScores = shopId => dispatch =>
+  fetch(`/ugc/v2/restaurants/${shopId}/ratings/scores`).then(data => dispatch(ratingScores(data)));

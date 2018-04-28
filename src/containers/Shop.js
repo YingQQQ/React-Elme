@@ -401,16 +401,7 @@ const CartFooter = styled.section`
   }
 `;
 
-// const BtnPlus = styled.span`
-//   position: fixed;
-//   bottom: 30px;
-//   left: 30px;
-//   svg{
-//     width: 0.9rem;
-//     height: 0.9rem;
-//     fill: #3190e8;
-//   }
-// `;
+// 3
 
 class Shop extends Component {
   state = {

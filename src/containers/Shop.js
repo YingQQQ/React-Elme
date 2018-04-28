@@ -3,13 +3,16 @@ import { hot } from 'react-hot-loader';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import immutable from 'immutable';
-// import Animated from 'animated/lib/targets/react-dom';
+import Animated from 'animated/lib/targets/react-dom';
+import Easing from 'animated/lib/Easing';
 import styled from 'styled-components';
 import MyLoadingComponent from '../components/Loading';
+import SVG from '../components/Svg';
+import BuyCart from '../components/BuyCart';
 import Tap from '../components/Tap';
 import svg from '../style/images/shop_back_svg.svg';
-import { getParameter } from '../utils/mutils';
-import { dispatchGeohash, fetchMsiteAddress, fetchShopDetails, fetchFoodMenu, fetchfoodRatingList, fetchRatingScores } from '../actions/action';
+import { getParameter, getImgPath } from '../utils/mutils';
+import { dispatchGeohash, fetchMsiteAddress, fetchShopDetails, fetchFoodMenu, fetchfoodRatingList, fetchRatingScores, fetchRatingTags } from '../actions/action';
 
 const Wrapper = styled.section`
   margin-top: 2rem;
@@ -210,6 +213,8 @@ const Foodsidebar = styled.section`
   li {
     padding: 0.7rem 0.3rem;
     border-bottom: 1px solid #e8e8e8;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
   span {
     color: #666;
@@ -243,15 +248,18 @@ const FoodDetail = styled.main`
   padding: 0.4rem 0;
   min-height: 4rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   .categoryMain {
     display: flex;
+    padding-bottom: .6rem;
     img {
       width: 3.25rem;
       height: 3.25rem;
     }
   }
   .categoryDetail {
+    position:relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -305,13 +313,115 @@ const FoodDetail = styled.main`
   }
 `;
 
+const ShopFooter = styled.footer`
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:2.8rem;
+  background-color:rgba(61,61,63,.9);
+  color:#fff;
+  z-index: 2;
+`;
+const DiscounTip = styled.section`
+  height:.7rem;
+  background-color:#fffad6;
+  color:#fff;
+  font-size:.5rem;
+  p{
+    text-align: center;
+    transform: scale(.9);
+  }
+`;
+const CartFooter = styled.section`
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 2.3rem;
+  padding-left: 3.5rem;
+  color: #fff;
+  font-size: 0.5rem;
+  .cartContainer {
+    display: flex;
+    position: absolute;
+    left: .5rem;
+    top: -.7rem;
+    padding: .4rem;
+    border-radius:50%;
+    background-color: #3190e8;
+    border:0.18rem solid #444;
+  }
+  .cartList{
+    position: absolute;
+    top: -.15rem;
+    right: -.25rem;
+    min-width: .65rem;
+    background-image: linear-gradient(-90deg,#ff7416,#ff3c15 98%);
+    border-radius: 50%;
+    color: #fff;
+    height: .65rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .cart_icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  .cartInfo{
+    display:flex;
+    flex-direction:column;
+  }
+  .cartInfo span{
+    font-size:.75rem;
+    color:#fff;
+  }
+  .cartInfo small{
+    transform:scale(.87);
+    transform-origin: 0% 0%;
+    color: #999;
+  }
+  .submitBtn{
+    background-color: #4cd964;
+    color: #fff;
+    height: 100%;
+    width: 4.5rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .65rem;
+    line-height: 1rem;
+    user-select: none;
+    span{
+      color:#fff;
+      font-weight:700;
+    }
+  }
+`;
+
+// const BtnPlus = styled.span`
+//   position: fixed;
+//   bottom: 30px;
+//   left: 30px;
+//   svg{
+//     width: 0.9rem;
+//     height: 0.9rem;
+//     fill: #3190e8;
+//   }
+// `;
+
 class Shop extends Component {
   state = {
     index: 0,
+    anim: new Animated.Value(0),
+    animChildren: new Animated.Value(0),
   };
   componentWillMount() {
     const { location: { search } } = this.props;
     this.shopId = getParameter(search, 'id');
+    this.windowHeight = window.innerHeight;
   }
   componentDidMount() {
     const { location: { search } } = this.props;
@@ -324,6 +434,7 @@ class Shop extends Component {
     this.props.fetchFoodMenu(this.shopId);
     this.props.fetchfoodRatingList(this.shopId, this.ratingOffset);
     this.props.fetchRatingScores(this.shopId);
+    this.props.fetchRatingTags(this.shopId);
   }
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
@@ -342,6 +453,10 @@ class Shop extends Component {
   latitude = null;
   longitude = null;
   ratingOffset = 0;
+  windowHeight = null;
+  showMoveDot = [];// 控制下落的小圆点显示隐藏
+  elLeft =0; // 当前点击加按钮在网页中的绝对top值
+  elBottom = 0; // 当前点击加按钮在网页中的绝对left值
   handleBack = () => {
     const {
       history: { goBack }
@@ -353,9 +468,70 @@ class Shop extends Component {
       index
     });
   };
+  handleMoveDotFun = (showMoveDot, elLeft, elBottom) => {
+    this.showMoveDot = [...this.showMoveDot, ...showMoveDot];
+    this.elLeft = elLeft;
+    this.elBottom = elBottom;
+    console.log(`elLfet${elLeft};elbottom${elBottom};`);
+    console.log((37 + this.elBottom) - this.windowHeight);
+    this.animate();
+  }
+  animate = () => {
+    this.state.anim.setValue(0);
+    this.state.animChildren.setValue(0);
+    Animated.sequence([
+      Animated.parallel(
+        [
+          Animated.timing(this.state.anim, {
+            toValue: 1,
+            duration: 1000,
+            easing: Easing.elastic(1)
+          }),
+          Animated.timing(this.state.animChildren, {
+            toValue: 1,
+            duration: 1000,
+            easing: Easing.elastic(1)
+          }),
+        ]
+      ),
+      Animated.stagger(
+        100,
+        [
+          Animated.timing(this.state.anim, {
+            toValue: 0,
+            duration: 10,
+            easing: Easing.elastic(1)
+          }),
+          Animated.timing(this.state.animChildren, {
+            toValue: 0,
+            duration: 10,
+            easing: Easing.elastic(1)
+          }),
+        ]
+      ),
+    ]).start();
+    // Animated.parallel([
+    //   Animated.timing(this.state.anim, {
+    //     toValue: 1,
+    //     duration: 1000,
+    //     easing: Easing.elastic(1)
+    //   }),
+    //   Animated.timing(this.state.animChildren, {
+    //     toValue: 1,
+    //     duration: 1000,
+    //     easing: Easing.elastic(1)
+    //   }),
+    // ]).start();
+    // Animated.timing(this.state.anim, {
+    //   toValue: 1,
+    //   duration: 1000,
+    //   easing: Easing.elastic(1)
+    // }).start();
+  }
   render() {
     const name = ['点餐', '点评', '商家'];
     const { index } = this.state;
+    const { foodMenu } = this.props;
     const childen = [];
     for (let i = 0; i < name.length; i += 1) {
       childen.push(
@@ -369,8 +545,25 @@ class Shop extends Component {
         </TapWrapper>
       );
     }
+    const styles = {
+      opacity: Animated.template`${this.state.anim}`,
+      transform: Animated.template`translate3d(0, ${this.state.anim.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['-700px', '-800px']
+      })},0)`
+    };
+    const innerStyles = {
+      position: 'fixed',
+      // bottom: '30px',
+      // left: '30px',
+      transform: Animated.template`translate3d(${this.state.animChildren.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['100px', '300px']
+      })}, 0, 0)`
+    };
     return (
       <div>
+        <SVG />
         <ShopHeader>
           <HeadNav>
             <svg
@@ -425,52 +618,21 @@ class Shop extends Component {
           <FoodMenus>
             <Foodsidebar>
               <ul className="menuCategory">
-                <li>
-                  <img
-                    className="menucategory-Icon"
-                    src="https://fuss10.elemecdn.com/0/6a/05b267f338acfeb8bd682d16e836dpng.png?imageMogr/format/webp/thumbnail/26x/"
-                    alt="hotSale"
-                  />
-                  <span>热销</span>
-                </li>
-                <li>
-                  <img
-                    className="menucategory-Icon"
-                    src="https://fuss10.elemecdn.com/b/91/8cf4f67e0e8223931cd595dc932fepng.png?imageMogr/format/webp/thumbnail/26x/"
-                    alt="hotSale"
-                  />
-                  <span>优惠</span>
-                </li>
-                <li>
-                  <span>鲜果切</span>
-                </li>
-                <li>
-                  <span>缤纷果盘</span>
-                </li>
-                <li>
-                  <span>女王臻品</span>
-                </li>
-                <li>
-                  <span>阳光橙堡</span>
-                </li>
-                <li>
-                  <span>全国严选</span>
-                </li>
-                <li>
-                  <span>全球臻选</span>
-                </li>
-                <li>
-                  <span>能量坚果</span>
-                </li>
-                <li>
-                  <span>零食饮料</span>
-                </li>
-                <li>
-                  <span>售后服务</span>
-                </li>
-                <li>
-                  <span>YES礼盒</span>
-                </li>
+                {
+                  !!foodMenu.size && foodMenu.toArray().map(food => (
+                    <li key={food.id}>
+                      {
+                        food.icon_url &&
+                        <img
+                          className="menucategory-Icon"
+                          src={getImgPath(food.icon_url)}
+                          alt="hotSale"
+                        />
+                      }
+                      <span>{food.name}</span>
+                    </li>
+                  ))
+                }
               </ul>
             </Foodsidebar>
             <FoodMain>
@@ -500,12 +662,66 @@ class Shop extends Component {
                       <strong className="foodPrice">9.99</strong>
                       <del className="foodOldPrice">19.99</del>
                     </p>
+                    <BuyCart showMoveDotFun={this.handleMoveDotFun} />
+                  </section>
+                </div>
+                <div className="categoryMain">
+                  <section>
+                    <img
+                      alt="【B级】超甜蕉1份不小于500g"
+                      title="【B级】超甜蕉1份不小于500g"
+                      src="https://fuss10.elemecdn.com/2/b4/c303f00115ccab4332c060b2a7cabjpeg.jpeg?imageMogr/format/webp/thumbnail/!140x140r/gravity/Center/crop/140x140/"
+                    />
+                  </section>
+                  <section className="categoryDetail">
+                    <p className="foodName">【B级】超甜蕉1份不小于500g</p>
+                    <p className="foodSec">
+                      <small>1斤香蕉大概2-4根</small>
+                    </p>
+                    <p>
+                      <span>月售55份</span>
+                      <span>好评率100%</span>
+                    </p>
+                    <p>
+                      <strong className="foodPrice">9.99</strong>
+                      <del className="foodOldPrice">19.99</del>
+                    </p>
+                    <BuyCart showMoveDotFun={this.handleMoveDotFun} />
                   </section>
                 </div>
               </FoodDetail>
             </FoodMain>
           </FoodMenus>
         </FoodContainer>
+        <ShopFooter>
+          <DiscounTip>
+            <p>满49减20，满69减30</p>
+          </DiscounTip>
+          <CartFooter>
+            <div className="cartContainer">
+              <span className="cartList">4</span>
+              <svg className="cart_icon">
+                <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#cart-icon" />
+              </svg>
+            </div>
+            <div className="cartInfo">
+              <p>
+                <span>¥20.9</span>
+              </p>
+              <small>配送费¥2</small>
+            </div>
+            <a role="button" className="submitBtn">
+              <span>去结算</span>
+            </a>
+          </CartFooter>
+        </ShopFooter>
+        <Animated.div style={styles}>
+          <Animated.div style={Object.assign({}, innerStyles)}>
+            <svg width=".9rem" height=".9rem" fill="#3190e8">
+              <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#cart-add" />
+            </svg>
+          </Animated.div>
+        </Animated.div>
         <Wrapper />
         {this.loading && (
           <div>
@@ -536,11 +752,13 @@ Shop.propTypes = {
   fetchFoodMenu: PropTypes.func.isRequired,
   fetchfoodRatingList: PropTypes.func.isRequired,
   fetchRatingScores: PropTypes.func.isRequired,
+  fetchRatingTags: PropTypes.func.isRequired,
   msiteAddress: PropTypes.instanceOf(immutable.Map),
   // shopDetails: PropTypes.instanceOf(immutable.Map),
-  // foodMenu: PropTypes.instanceOf(immutable.Iterable),
+  foodMenu: PropTypes.instanceOf(immutable.Iterable),
   // foodRatingList: PropTypes.instanceOf(immutable.Iterable),
   // ratingScores: PropTypes.instanceOf(immutable.Iterable),
+  // ratingTags: PropTypes.instanceOf(immutable.Iterable),
 };
 
 const mapStateToProps = state => ({
@@ -550,6 +768,7 @@ const mapStateToProps = state => ({
   foodMenu: state.getIn(['foodMenu']),
   foodRatingList: state.getIn(['foodRatingList']),
   ratingScores: state.getIn(['ratingScores']),
+  ratingTags: state.getIn(['ratingTags']),
 });
 
 export default hot(module)(
@@ -559,6 +778,7 @@ export default hot(module)(
     fetchShopDetails,
     fetchFoodMenu,
     fetchfoodRatingList,
-    fetchRatingScores
+    fetchRatingScores,
+    fetchRatingTags
   })(Shop)
 );

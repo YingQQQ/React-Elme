@@ -15,7 +15,8 @@ import {
   shopDetails,
   foodMenu,
   foodRatingList,
-  ratingScores
+  ratingScores,
+  ratingTags,
 } from './getDate';
 
 const initialState = Immutable.fromJS({
@@ -47,5 +48,6 @@ export default injectedReducers =>
     foodMenu,
     foodRatingList,
     ratingScores,
+    ratingTags,
     ...injectedReducers
   });

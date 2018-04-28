@@ -336,3 +336,17 @@ export const getParameter = (search, param) => {
   }
   return search.substring(iStart, iEnd);
 };
+
+export const getImgPath = (path) => {
+  let suffix;
+  if (!path && typeof path !== 'string') {
+    return 'http://test.fe.ptdev.cn/elm/elmlogo.jpeg';
+  }
+  if (path.indexOf('jpeg') !== -1) {
+    suffix = '.jpeg';
+  } else {
+    suffix = '.jpg';
+  }
+  const url = `/${path.substring(0, 1)}/${path.substring(1, 3)}/${path.substring(3)}${suffix}`;
+  return `https://fuss10.elemecdn.com${url}`;
+};

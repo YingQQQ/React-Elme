@@ -1,6 +1,6 @@
 module.exports = {
   dev: {
-    port: 8035,
+    port: 8038,
     context: [
       '/shopping',
       '/ugc',
@@ -16,6 +16,6 @@ module.exports = {
       '/img',
       'restapi'
     ],
-    proxypath: 'http://cangdu.org:8001',
+    proxypath: 'http://cangdu.org:8001'
   }
 };

@@ -16,6 +16,7 @@ import {
   GET_FOOD_MENU,
   GET_FOOD_RATING_LIST,
   GET_RATING_SCORES,
+  GET_RATING_TAGS,
 } from '../constants/actionsType';
 
 const initialObjectState = Map({});
@@ -197,6 +198,17 @@ export const ratingScores = (state = initialArrayState, action) => {
     case GET_RATING_SCORES: {
       const data = action.data;
       const imuData = Map(data);
+      return imuData;
+    }
+    default:
+      return state;
+  }
+};
+export const ratingTags = (state = initialArrayState, action) => {
+  switch (action.type) {
+    case GET_RATING_TAGS: {
+      const data = action.data;
+      const imuData = List(data);
       return imuData;
     }
     default:

@@ -15,6 +15,7 @@ import {
   GET_FOOD_MENU,
   GET_FOOD_RATING_LIST,
   GET_RATING_SCORES,
+  GET_RATING_TAGS,
 } from '../constants/actionsType';
 import fetch from '../utils/fetch';
 
@@ -247,3 +248,19 @@ export const ratingScores = data => ({
  */
 export const fetchRatingScores = shopId => dispatch =>
   fetch(`/ugc/v2/restaurants/${shopId}/ratings/scores`).then(data => dispatch(ratingScores(data)));
+
+
+/**
+ * 获取商铺评价分类
+ */
+
+export const ratingTags = data => ({
+  type: GET_RATING_TAGS,
+  data
+});
+
+/**
+ *
+ * @param {number} shopId
+ */
+export const fetchRatingTags = shopId => dispatch => fetch(`/ugc/v2/restaurants/${shopId}/ratings/tags`).then(data => dispatch(ratingTags(data)));

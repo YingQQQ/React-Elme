@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import immutable from 'immutable';
 import Animated from 'animated/lib/targets/react-dom';
-import Easing from 'animated/lib/Easing';
+// import Easing from 'animated/lib/Easing';
 import styled from 'styled-components';
 import MyLoadingComponent from '../components/Loading';
 import SVG from '../components/Svg';
@@ -401,13 +401,13 @@ const CartFooter = styled.section`
   }
 `;
 
-// 3
 
 class Shop extends Component {
   state = {
     index: 0,
+    bottom: 30,
+    left: 30,
     anim: new Animated.Value(0),
-    animChildren: new Animated.Value(0),
   };
   componentWillMount() {
     const { location: { search } } = this.props;
@@ -459,65 +459,11 @@ class Shop extends Component {
       index
     });
   };
-  handleMoveDotFun = (showMoveDot, elLeft, elBottom) => {
-    this.showMoveDot = [...this.showMoveDot, ...showMoveDot];
+  handleMoveDotFun = (elLeft, elBottom, elTop) => {
     this.elLeft = elLeft;
     this.elBottom = elBottom;
-    console.log(`elLfet${elLeft};elbottom${elBottom};`);
-    console.log((37 + this.elBottom) - this.windowHeight);
-    this.animate();
-  }
-  animate = () => {
-    this.state.anim.setValue(0);
-    this.state.animChildren.setValue(0);
-    Animated.sequence([
-      Animated.parallel(
-        [
-          Animated.timing(this.state.anim, {
-            toValue: 1,
-            duration: 1000,
-            easing: Easing.elastic(1)
-          }),
-          Animated.timing(this.state.animChildren, {
-            toValue: 1,
-            duration: 1000,
-            easing: Easing.elastic(1)
-          }),
-        ]
-      ),
-      Animated.stagger(
-        100,
-        [
-          Animated.timing(this.state.anim, {
-            toValue: 0,
-            duration: 10,
-            easing: Easing.elastic(1)
-          }),
-          Animated.timing(this.state.animChildren, {
-            toValue: 0,
-            duration: 10,
-            easing: Easing.elastic(1)
-          }),
-        ]
-      ),
-    ]).start();
-    // Animated.parallel([
-    //   Animated.timing(this.state.anim, {
-    //     toValue: 1,
-    //     duration: 1000,
-    //     easing: Easing.elastic(1)
-    //   }),
-    //   Animated.timing(this.state.animChildren, {
-    //     toValue: 1,
-    //     duration: 1000,
-    //     easing: Easing.elastic(1)
-    //   }),
-    // ]).start();
-    // Animated.timing(this.state.anim, {
-    //   toValue: 1,
-    //   duration: 1000,
-    //   easing: Easing.elastic(1)
-    // }).start();
+    this.elTop = elTop;
+    console.log(`elLfet${elLeft};elbottom${elBottom};elTop${elTop};`);
   }
   render() {
     const name = ['点餐', '点评', '商家'];
@@ -536,22 +482,16 @@ class Shop extends Component {
         </TapWrapper>
       );
     }
-    const styles = {
-      opacity: Animated.template`${this.state.anim}`,
-      transform: Animated.template`translate3d(0, ${this.state.anim.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['-700px', '-800px']
-      })},0)`
-    };
-    const innerStyles = {
-      position: 'fixed',
-      // bottom: '30px',
-      // left: '30px',
-      transform: Animated.template`translate3d(${this.state.animChildren.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['100px', '300px']
-      })}, 0, 0)`
-    };
+    // const styles = {
+    //   opacity: Animated.template`${this.state.anim}`,
+    // };
+    // const innerStyles = {
+    //   position: 'fixed',
+    //   left: Animated.template`${this.state.anim.interpolate({
+    //     inputRange: [0, 0.25, 0.5, 0.75, 1],
+    //     outputRange: [`${this.state.left}px`, '50px', '100px', '150px', `${this.state.left}px`]
+    //   })}`,
+    // };
     return (
       <div>
         <SVG />
@@ -706,13 +646,13 @@ class Shop extends Component {
             </a>
           </CartFooter>
         </ShopFooter>
-        <Animated.div style={styles}>
+        {/* <Animated.div style={styles}>
           <Animated.div style={Object.assign({}, innerStyles)}>
             <svg width=".9rem" height=".9rem" fill="#3190e8">
               <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#cart-add" />
             </svg>
           </Animated.div>
-        </Animated.div>
+        </Animated.div> */}
         <Wrapper />
         {this.loading && (
           <div>

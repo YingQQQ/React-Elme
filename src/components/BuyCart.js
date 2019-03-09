@@ -45,15 +45,15 @@ class BuyCart extends PureComponent {
     anim: new Animated.Value(0),
     left: 0,
     top: 0,
-    v: 0,
+    isDoneMove: false,
   };
   componentDidMount() {
     console.log('buyCart componentDidMount');
     this.windowHeight = window.innerHeight;
-    console.log(this.windowHeight);
   }
   rootNode = null;
   windowHeight = null;
+  isDoneMove = false;
   handleMinus = (e) => {
     e.preventDefault();
     console.log('cart-minus');
@@ -61,16 +61,11 @@ class BuyCart extends PureComponent {
   handlePlus = (e) => {
     e.preventDefault();
     const elLeft = e.target.getBoundingClientRect().left;
-    const elBottom = e.target.getBoundingClientRect().bottom;
     const elTop = e.target.getBoundingClientRect().top;
-    console.log(elLeft);
-    console.log(this.value(elLeft, 30, this.windowHeight - 50, elTop));
-    // this.value(elLeft, 30, elTop, this.windowHeight - 50);
     this.setState(() => ({
       left: elLeft,
       top: elTop
     }));
-    this.props.showMoveDotFun(elLeft, elBottom, elTop);
     this.animate();
   };
   animate = () => {
@@ -80,7 +75,7 @@ class BuyCart extends PureComponent {
         [
           Animated.timing(this.state.anim, {
             toValue: 2,
-            duration: 1000,
+            duration: 600,
             easing: Easing.linear
           }),
         ]
@@ -95,17 +90,14 @@ class BuyCart extends PureComponent {
           }),
         ]
       ),
-    ]).start();
-  }
-  value = (a, b, c, d) => {
-    const x = (c - d) / ((a * a) - (b * b));
-    const y = c - ((a * a) * x);
-    return {
-      x,
-      y
-    };
+    ]).start(() => {
+      this.isDoneMove = true;
+      this.props.showMoveDotFun(this.isDoneMove);
+    });
   }
   render() {
+    const { top, left } = this.state;
+    const endPos = this.windowHeight - 50;
     const styles = {
       opacity: this.state.anim,
       zIndex: 1,
@@ -114,11 +106,12 @@ class BuyCart extends PureComponent {
       position: 'fixed',
       left: Animated.template`${this.state.anim.interpolate({
         inputRange: [0, 0.5, 1, 1.5, 2],
-        outputRange: [`${this.state.left}px`, '262.5px', '185px', '107.5px', '30px']
+        outputRange: [`${left}px`, '252.5px', '185px', '107.5px', '30px']
       })}`,
       top: Animated.template`${this.state.anim.interpolate({
         inputRange: [0, 0.5, 1, 1.5, 2],
-        outputRange: [`${this.state.top}px`, `${this.state.top + 50}px`, `${this.state.top}px`, '500px', `${this.windowHeight - 50}px`]
+        outputRange: [`${top}px`, `${top - 80 <= 0 ? 10 : top - 80}px`,
+          `${top}px`, `${top + ((endPos - top) / 2)}px`, `${endPos}px`]
       })}`,
       zIndex: 1,
     };

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import immutable from 'immutable';
 import Animated from 'animated/lib/targets/react-dom';
-// import Easing from 'animated/lib/Easing';
+import Easing from 'animated/lib/Easing';
 import styled from 'styled-components';
 import MyLoadingComponent from '../components/Loading';
 import SVG from '../components/Svg';
@@ -12,6 +12,7 @@ import BuyCart from '../components/BuyCart';
 import Tap from '../components/Tap';
 import svg from '../style/images/shop_back_svg.svg';
 import { getParameter, getImgPath } from '../utils/mutils';
+import { listen } from '../utils/dom-helpers/events';
 import { dispatchGeohash, fetchMsiteAddress, fetchShopDetails, fetchFoodMenu, fetchfoodRatingList, fetchRatingScores, fetchRatingTags } from '../actions/action';
 
 const Wrapper = styled.section`
@@ -156,12 +157,22 @@ const ShopDiscount = styled.div`
     }
   }
 `;
+const ShopTapSwpper = styled.section`
+    height: 50px;
+`;
 
 const ShopTap = styled.section`
   display: flex;
   justify-content: space-around;
   background-color: #fff;
   border-bottom: 1px solid #eee;
+  z-index:3;
+  position: ${props => (props.position ? 'fixed' : null)};
+  right: ${props => (props.position ? 0 : null)};
+  top: ${props => (props.position ? 0 : null)};
+  left: ${props => (props.position ? 0 : null)};
+  // transition: ${props => (props.position ? 'all 0s ease 0s' : null)};
+  transition: all 0s ease 0s;
 `;
 const TapWrapper = styled.div`
   flex: 1;
@@ -225,6 +236,8 @@ const FoodMain = styled.section`
   background: #fff;
   width: 12.3rem;
   margin-left: 0.5rem;
+  overflow-y: auto;
+  height: 100%;
   .categoryTitle {
     display: flex;
     padding: 0.2rem 0.8rem 0.2rem 0;
@@ -405,14 +418,14 @@ const CartFooter = styled.section`
 class Shop extends Component {
   state = {
     index: 0,
-    bottom: 30,
-    left: 30,
-    anim: new Animated.Value(0),
+    height: null,
+    shopTapSwpper: null,
+    tapPos: null,
+    anim: new Animated.Value(1),
   };
   componentWillMount() {
     const { location: { search } } = this.props;
     this.shopId = getParameter(search, 'id');
-    this.windowHeight = window.innerHeight;
   }
   componentDidMount() {
     const { location: { search } } = this.props;
@@ -426,6 +439,14 @@ class Shop extends Component {
     this.props.fetchfoodRatingList(this.shopId, this.ratingOffset);
     this.props.fetchRatingScores(this.shopId);
     this.props.fetchRatingTags(this.shopId);
+    this.windowHeight = window.innerHeight;
+    this.tapTop = this.tapContainer.offsetTop;
+    console.log(document.documentElement.scrollTop);
+    this.touchMoveListener = listen(this.rootNood, 'touchmove', (event) => {
+      this.handleTouchMove(event);
+    }, {
+      passive: false
+    });
   }
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
@@ -434,7 +455,6 @@ class Shop extends Component {
       if (msiteAddress.size && !(this.latitude && this.longitude)) {
         this.latitude = msiteAddress.get('latitude');
         this.longitude = msiteAddress.get('longitude');
-        console.log(this.latitude, this.longitude);
         this.props.fetchShopDetails(this.shopId, this.latitude, this.longitude);
       }
     }
@@ -443,11 +463,14 @@ class Shop extends Component {
   shopId = null;
   latitude = null;
   longitude = null;
-  ratingOffset = 0;
+  tapTop = null;
   windowHeight = null;
-  showMoveDot = [];// 控制下落的小圆点显示隐藏
-  elLeft =0; // 当前点击加按钮在网页中的绝对top值
-  elBottom = 0; // 当前点击加按钮在网页中的绝对left值
+  tapContainer = null;
+  isSwiping = undefined;
+  start = false;
+  startX = null;
+  startY = null;
+  ratingOffset = 0;
   handleBack = () => {
     const {
       history: { goBack }
@@ -459,11 +482,83 @@ class Shop extends Component {
       index
     });
   };
-  handleMoveDotFun = (elLeft, elBottom, elTop) => {
-    this.elLeft = elLeft;
-    this.elBottom = elBottom;
-    this.elTop = elTop;
-    console.log(`elLfet${elLeft};elbottom${elBottom};elTop${elTop};`);
+  handleMoveDotFun = (isDoneMove) => {
+    if (isDoneMove) {
+      this.animated();
+    }
+  }
+  animated = () => {
+    this.state.anim.setValue(1);
+    Animated.sequence([
+      Animated.parallel(
+        [
+          Animated.timing(this.state.anim, {
+            toValue: 2,
+            duration: 500,
+            easing: Easing.elastic(1)
+          }),
+        ]
+      ),
+      Animated.stagger(
+        100,
+        [
+          Animated.timing(this.state.anim, {
+            toValue: 1,
+            duration: 10,
+            easing: Easing.elastic(1)
+          }),
+        ]
+      ),
+    ]).start();
+  }
+  handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    this.startX = touch.pageX;
+    this.startY = touch.pageY;
+    this.started = true;
+  };
+  handleTouchMove = (e) => {
+    if (!this.started) {
+      this.handleTouchStart(e);
+      return;
+    }
+    if (!this.rootNood) {
+      return;
+    }
+    const touch = e.touches[0];
+    if (this.isSwiping === undefined) {
+      const dx = Math.abs(this.startX - touch.pageX);
+      const dy = Math.abs(this.startY - touch.pageY);
+      const isSwiping = dy > dx && dy > 3;
+      if (dy > dx) {
+        e.preventDefault();
+      }
+      if (isSwiping) {
+        this.isSwiping = isSwiping;
+        this.startX = touch.pageX;
+        return;
+      }
+    }
+
+    if (this.isSwiping !== true) {
+      return;
+    }
+    if (
+      document.documentElement.scrollTop >= (this.tapTop - 5)
+    ) {
+      this.setState(() => ({
+        tapPos: true,
+      }));
+    } else if (
+      document.documentElement.scrollTop < (this.tapTop + 20)
+    ) {
+      this.setState(() => ({
+        tapPos: false,
+      }));
+    }
+  };
+  handleTouchEnd = () => {
+    this.start = false;
   }
   render() {
     const name = ['点餐', '点评', '商家'];
@@ -482,18 +577,25 @@ class Shop extends Component {
         </TapWrapper>
       );
     }
-    // const styles = {
-    //   opacity: Animated.template`${this.state.anim}`,
-    // };
-    // const innerStyles = {
-    //   position: 'fixed',
-    //   left: Animated.template`${this.state.anim.interpolate({
-    //     inputRange: [0, 0.25, 0.5, 0.75, 1],
-    //     outputRange: [`${this.state.left}px`, '50px', '100px', '150px', `${this.state.left}px`]
-    //   })}`,
-    // };
+    const styles = {
+      opacity: this.state.anim,
+      transform: Animated.template`scale(${this.state.anim.interpolate({
+        inputRange: [1, 1.5, 2],
+        outputRange: [1, 1.35, 1]
+      })})`,
+    };
+    const foodStyle = {
+      height: this.state.height
+    };
+    const touchEvents = {
+      onTouchStart: this.handleTouchStart,
+      onTouchEnd: this.handleTouchEnd
+    };
     return (
-      <div>
+      <div
+        ref={(node) => { this.rootNood = node; }}
+        {...touchEvents}
+      >
         <SVG />
         <ShopHeader>
           <HeadNav>
@@ -544,8 +646,15 @@ class Shop extends Component {
             </div>
           </ShopDiscount>
         </ShopHeader>
-        <ShopTap>{childen}</ShopTap>
-        <FoodContainer>
+        <ShopTapSwpper>
+          <ShopTap
+            innerRef={(node) => { this.tapContainer = node; }}
+            position={this.state.tapPos}
+          >
+            {childen}
+          </ShopTap>
+        </ShopTapSwpper>
+        <FoodContainer style={foodStyle}>
           <FoodMenus>
             <Foodsidebar>
               <ul className="menuCategory">
@@ -620,6 +729,102 @@ class Shop extends Component {
                     <BuyCart showMoveDotFun={this.handleMoveDotFun} />
                   </section>
                 </div>
+                <div className="categoryMain">
+                  <section>
+                    <img
+                      alt="【B级】超甜蕉1份不小于500g"
+                      title="【B级】超甜蕉1份不小于500g"
+                      src="https://fuss10.elemecdn.com/2/b4/c303f00115ccab4332c060b2a7cabjpeg.jpeg?imageMogr/format/webp/thumbnail/!140x140r/gravity/Center/crop/140x140/"
+                    />
+                  </section>
+                  <section className="categoryDetail">
+                    <p className="foodName">【B级】超甜蕉1份不小于500g</p>
+                    <p className="foodSec">
+                      <small>1斤香蕉大概2-4根</small>
+                    </p>
+                    <p>
+                      <span>月售55份</span>
+                      <span>好评率100%</span>
+                    </p>
+                    <p>
+                      <strong className="foodPrice">9.99</strong>
+                      <del className="foodOldPrice">19.99</del>
+                    </p>
+                    <BuyCart showMoveDotFun={this.handleMoveDotFun} />
+                  </section>
+                </div>
+                <div className="categoryMain">
+                  <section>
+                    <img
+                      alt="【B级】超甜蕉1份不小于500g"
+                      title="【B级】超甜蕉1份不小于500g"
+                      src="https://fuss10.elemecdn.com/2/b4/c303f00115ccab4332c060b2a7cabjpeg.jpeg?imageMogr/format/webp/thumbnail/!140x140r/gravity/Center/crop/140x140/"
+                    />
+                  </section>
+                  <section className="categoryDetail">
+                    <p className="foodName">【B级】超甜蕉1份不小于500g</p>
+                    <p className="foodSec">
+                      <small>1斤香蕉大概2-4根</small>
+                    </p>
+                    <p>
+                      <span>月售55份</span>
+                      <span>好评率100%</span>
+                    </p>
+                    <p>
+                      <strong className="foodPrice">9.99</strong>
+                      <del className="foodOldPrice">19.99</del>
+                    </p>
+                    <BuyCart showMoveDotFun={this.handleMoveDotFun} />
+                  </section>
+                </div>
+                <div className="categoryMain">
+                  <section>
+                    <img
+                      alt="【B级】超甜蕉1份不小于500g"
+                      title="【B级】超甜蕉1份不小于500g"
+                      src="https://fuss10.elemecdn.com/2/b4/c303f00115ccab4332c060b2a7cabjpeg.jpeg?imageMogr/format/webp/thumbnail/!140x140r/gravity/Center/crop/140x140/"
+                    />
+                  </section>
+                  <section className="categoryDetail">
+                    <p className="foodName">【B级】超甜蕉1份不小于500g</p>
+                    <p className="foodSec">
+                      <small>1斤香蕉大概2-4根</small>
+                    </p>
+                    <p>
+                      <span>月售55份</span>
+                      <span>好评率100%</span>
+                    </p>
+                    <p>
+                      <strong className="foodPrice">9.99</strong>
+                      <del className="foodOldPrice">19.99</del>
+                    </p>
+                    <BuyCart showMoveDotFun={this.handleMoveDotFun} />
+                  </section>
+                </div>
+                <div className="categoryMain">
+                  <section>
+                    <img
+                      alt="【B级】超甜蕉1份不小于500g"
+                      title="【B级】超甜蕉1份不小于500g"
+                      src="https://fuss10.elemecdn.com/2/b4/c303f00115ccab4332c060b2a7cabjpeg.jpeg?imageMogr/format/webp/thumbnail/!140x140r/gravity/Center/crop/140x140/"
+                    />
+                  </section>
+                  <section className="categoryDetail">
+                    <p className="foodName">【B级】超甜蕉1份不小于500g</p>
+                    <p className="foodSec">
+                      <small>1斤香蕉大概2-4根</small>
+                    </p>
+                    <p>
+                      <span>月售55份</span>
+                      <span>好评率100%</span>
+                    </p>
+                    <p>
+                      <strong className="foodPrice">9.99</strong>
+                      <del className="foodOldPrice">19.99</del>
+                    </p>
+                    <BuyCart showMoveDotFun={this.handleMoveDotFun} />
+                  </section>
+                </div>
               </FoodDetail>
             </FoodMain>
           </FoodMenus>
@@ -631,9 +836,11 @@ class Shop extends Component {
           <CartFooter>
             <div className="cartContainer">
               <span className="cartList">4</span>
-              <svg className="cart_icon">
-                <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#cart-icon" />
-              </svg>
+              <Animated.div style={Object.assign({}, styles)}>
+                <svg className="cart_icon">
+                  <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#cart-icon" />
+                </svg>
+              </Animated.div>
             </div>
             <div className="cartInfo">
               <p>
@@ -646,13 +853,6 @@ class Shop extends Component {
             </a>
           </CartFooter>
         </ShopFooter>
-        {/* <Animated.div style={styles}>
-          <Animated.div style={Object.assign({}, innerStyles)}>
-            <svg width=".9rem" height=".9rem" fill="#3190e8">
-              <use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#cart-add" />
-            </svg>
-          </Animated.div>
-        </Animated.div> */}
         <Wrapper />
         {this.loading && (
           <div>

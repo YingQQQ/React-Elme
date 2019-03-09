@@ -139,9 +139,12 @@ const mapStateToProps = state => ({
 });
 
 export default hot(module)(
-  connect(mapStateToProps, {
-    fetchGuessCity,
-    fetchHotCities,
-    fetchGroupCities
-  })(App)
+  connect(
+    mapStateToProps,
+    {
+      fetchGuessCity,
+      fetchHotCities,
+      fetchGroupCities
+    }
+  )(App)
 );
